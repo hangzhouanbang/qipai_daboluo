@@ -1,0 +1,37 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/qipai_daboluo
+
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+          zk-nodes: localhost:2181
+          minPartitionCount: 1
+          autoCreateTopics: true
+          autoAddPartitions: false
+        bindings:
+          
+
+      bindings:
+        
+      
+server:
+  port: 2008
+  tomcat:
+    access-log-enabled: true
+    access-log-pattern: '%a %h %A %p %U %t %H %m %r %s %b %D'
+    basedir: ./
+  #compression:
+    #enabled: true
+    #mime-types: application/json,application/xml,text/html,text/xml,text/plain
+    #min-response-size: 1024
+
+filepath:
+  snapshotFileBasePath: /data/app/qipai_daboluo/server1/snapshot
+  jFileBasePath: /data/app/qipai_daboluo/server1/journal
+  
+logging:
+  config: classpath:spring-log.xml
