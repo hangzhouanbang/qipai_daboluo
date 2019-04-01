@@ -17,7 +17,10 @@ spring:
 
       bindings:
         
-      
+memcache:
+  ip: 127.0.0.1
+  port: 11211
+
 server:
   port: 2008
   tomcat:

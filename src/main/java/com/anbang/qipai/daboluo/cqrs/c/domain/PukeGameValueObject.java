@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.dml.mpgame.game.extend.fpmpv.FixedPlayersMultipanAndVotetofinishGameValueObject;
+import com.dml.shisanshui.ju.JuResult;
 import com.dml.shisanshui.pai.wanfa.BianXingWanFa;
 
 public class PukeGameValueObject extends FixedPlayersMultipanAndVotetofinishGameValueObject {
@@ -16,6 +17,7 @@ public class PukeGameValueObject extends FixedPlayersMultipanAndVotetofinishGame
 	private boolean zidongzupai;// 自动组牌
 	private boolean yitiaolong;// 一条龙
 	private Map<String, Integer> playerTotalScoreMap = new HashMap<>();
+	private JuResult juResult;
 
 	public PukeGameValueObject(PukeGame game) {
 		super(game);
@@ -28,6 +30,9 @@ public class PukeGameValueObject extends FixedPlayersMultipanAndVotetofinishGame
 		zidongzupai = game.isZidongzupai();
 		yitiaolong = game.isYitiaolong();
 		playerTotalScoreMap.putAll(game.getPlayerTotalScoreMap());
+		if (game.getJu() != null) {
+			juResult = game.getJu().getJuResult();
+		}
 	}
 
 	public int getPanshu() {
@@ -100,6 +105,14 @@ public class PukeGameValueObject extends FixedPlayersMultipanAndVotetofinishGame
 
 	public void setPlayerTotalScoreMap(Map<String, Integer> playerTotalScoreMap) {
 		this.playerTotalScoreMap = playerTotalScoreMap;
+	}
+
+	public JuResult getJuResult() {
+		return juResult;
+	}
+
+	public void setJuResult(JuResult juResult) {
+		this.juResult = juResult;
 	}
 
 }

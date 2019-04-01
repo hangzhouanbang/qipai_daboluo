@@ -3,8 +3,15 @@ package com.anbang.qipai.daboluo.cqrs.c.domain;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.anbang.qipai.daboluo.cqrs.c.domain.result.DaboluoJuResult;
+import com.anbang.qipai.daboluo.cqrs.c.domain.result.DaboluoPanPlayerResult;
+import com.anbang.qipai.daboluo.cqrs.c.domain.result.DaboluoPanResult;
+import com.anbang.qipai.daboluo.cqrs.c.domain.result.PukeActionResult;
+import com.dml.mpgame.game.Finished;
 import com.dml.mpgame.game.Playing;
 import com.dml.mpgame.game.extend.fpmpv.FixedPlayersMultipanAndVotetofinishGame;
+import com.dml.mpgame.game.extend.multipan.WaitingNextPan;
+import com.dml.mpgame.game.extend.vote.VoteNotPassWhenPlaying;
 import com.dml.mpgame.game.player.GamePlayer;
 import com.dml.mpgame.game.player.PlayerPlaying;
 import com.dml.shisanshui.gameprocess.AllPlayerChupaiPanFinishiDeterminer;
@@ -53,6 +60,28 @@ public class PukeGame extends FixedPlayersMultipanAndVotetofinishGame {
 		ju.setCurrentPanResultBuilder(new DaboluoCurrentPanResultBuilder());
 		ju.setJuResultBuilder(new DaboluoJuResultBuilder());
 		return ju.startFirstPan(allPlayerIds(), startTime);
+	}
+
+	public PukeActionResult chupai(String playerId, String paixingIndex, long actionTime) throws Exception {
+		PanActionFrame panActionFrame = ju.chupai(playerId, paixingIndex, actionTime);
+		PukeActionResult result = new PukeActionResult();
+		result.setPanActionFrame(panActionFrame);
+		if (state.name().equals(VoteNotPassWhenPlaying.name)) {
+			state = new Playing();
+		}
+		checkAndFinishPan();
+		if (state.name().equals(WaitingNextPan.name) || state.name().equals(Finished.name)) {// 盘结束了
+			DaboluoPanResult panResult = (DaboluoPanResult) ju.findLatestFinishedPanResult();
+			for (DaboluoPanPlayerResult doudizhuPanPlayerResult : panResult.getPanPlayerResultList()) {
+				playerTotalScoreMap.put(doudizhuPanPlayerResult.getPlayerId(), doudizhuPanPlayerResult.getTotalScore());
+			}
+			result.setPanResult(panResult);
+			if (state.name().equals(Finished.name)) {// 局结束了
+				result.setJuResult((DaboluoJuResult) ju.getJuResult());
+			}
+		}
+		result.setPukeGame(new PukeGameValueObject(this));
+		return result;
 	}
 
 	@Override
