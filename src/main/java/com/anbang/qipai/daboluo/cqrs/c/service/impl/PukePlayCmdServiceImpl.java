@@ -16,7 +16,8 @@ import com.dml.shisanshui.pan.PanActionFrame;
 public class PukePlayCmdServiceImpl extends CmdServiceBase implements PukePlayCmdService {
 
 	@Override
-	public PukeActionResult chupai(String playerId, String dianshuZuheIdx, Long actionTime) throws Exception {
+	public PukeActionResult chupai(String playerId, String toudaoIndex, String zhongdaoIndex, String weidaoIndex,
+			Long actionTime) throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 		String gameId = gameServer.findBindGameId(playerId);
 		if (gameId == null) {
@@ -24,7 +25,8 @@ public class PukePlayCmdServiceImpl extends CmdServiceBase implements PukePlayCm
 		}
 
 		PukeGame pukeGame = (PukeGame) gameServer.findGame(gameId);
-		PukeActionResult pukeActionResult = pukeGame.chupai(playerId, dianshuZuheIdx, actionTime);
+		PukeActionResult pukeActionResult = pukeGame.chupai(playerId, toudaoIndex, zhongdaoIndex, weidaoIndex,
+				actionTime);
 
 		if (pukeActionResult.getJuResult() != null) {// 全部结束
 			gameServer.finishGame(gameId);

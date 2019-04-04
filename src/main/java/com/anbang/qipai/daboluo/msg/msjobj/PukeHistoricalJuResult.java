@@ -6,6 +6,7 @@ import java.util.List;
 import com.anbang.qipai.daboluo.cqrs.c.domain.result.DaboluoJuResult;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.JuResultDbo;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.PukeGameDbo;
+import com.anbang.qipai.daboluo.web.vo.PanResultVO;
 
 public class PukeHistoricalJuResult {
 	private String gameId;
@@ -13,8 +14,8 @@ public class PukeHistoricalJuResult {
 	private String datuhaoId;
 	private int panshu;
 	private int lastPanNo;
-	private List<DaboluoJuPlayerResultMO> playerResultList;
-
+	private List<DaboluoJuPlayerResultMO> playerJuResultList;
+	private PanResultVO lastPanResult;
 	private long finishTime;
 
 	public PukeHistoricalJuResult() {
@@ -27,19 +28,18 @@ public class PukeHistoricalJuResult {
 		dayingjiaId = juResult.getDayingjiaId();
 		datuhaoId = juResult.getDatuhaoId();
 		if (juResultDbo.getLastPanResult() != null) {
-
+			lastPanResult = new PanResultVO(juResultDbo.getLastPanResult(), pukeGameDbo);
 		}
 		finishTime = juResultDbo.getFinishTime();
 		this.panshu = pukeGameDbo.getPanshu();
 		lastPanNo = juResult.getFinishedPanCount();
-		playerResultList = new ArrayList<>();
+		playerJuResultList = new ArrayList<>();
 		if (juResult.getPlayerResultList() != null) {
-			juResult.getPlayerResultList()
-					.forEach((juPlayerResult) -> playerResultList.add(new DaboluoJuPlayerResultMO(juPlayerResult,
-							pukeGameDbo.findPlayer(juPlayerResult.getPlayerId()))));
+			juResult.getPlayerResultList().forEach((juPlayerResult) -> playerJuResultList.add(
+					new DaboluoJuPlayerResultMO(juPlayerResult, pukeGameDbo.findPlayer(juPlayerResult.getPlayerId()))));
 		} else {
 			pukeGameDbo.getPlayers().forEach(
-					(pukeGamePlayerDbo) -> playerResultList.add(new DaboluoJuPlayerResultMO(pukeGamePlayerDbo)));
+					(pukeGamePlayerDbo) -> playerJuResultList.add(new DaboluoJuPlayerResultMO(pukeGamePlayerDbo)));
 		}
 	}
 
@@ -83,12 +83,12 @@ public class PukeHistoricalJuResult {
 		this.lastPanNo = lastPanNo;
 	}
 
-	public List<DaboluoJuPlayerResultMO> getPlayerResultList() {
-		return playerResultList;
+	public List<DaboluoJuPlayerResultMO> getPlayerJuResultList() {
+		return playerJuResultList;
 	}
 
-	public void setPlayerResultList(List<DaboluoJuPlayerResultMO> playerResultList) {
-		this.playerResultList = playerResultList;
+	public void setPlayerJuResultList(List<DaboluoJuPlayerResultMO> playerJuResultList) {
+		this.playerJuResultList = playerJuResultList;
 	}
 
 	public long getFinishTime() {
@@ -97,6 +97,14 @@ public class PukeHistoricalJuResult {
 
 	public void setFinishTime(long finishTime) {
 		this.finishTime = finishTime;
+	}
+
+	public PanResultVO getLastPanResult() {
+		return lastPanResult;
+	}
+
+	public void setLastPanResult(PanResultVO lastPanResult) {
+		this.lastPanResult = lastPanResult;
 	}
 
 }

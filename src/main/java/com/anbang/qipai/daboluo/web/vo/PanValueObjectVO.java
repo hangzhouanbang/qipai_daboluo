@@ -1,29 +1,26 @@
 package com.anbang.qipai.daboluo.web.vo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.dml.shisanshui.pai.PaiListValueObject;
-import com.dml.shisanshui.position.Position;
+import com.dml.shisanshui.pan.PanValueObject;
 
 public class PanValueObjectVO {
 	private int no;
 	private List<DaboluoPlayerValueObjectVO> doudizhuPlayerList;
 	private PaiListValueObject paiListValueObject;
-	private String dizhuPlayerId;// 地主id
-	private Position actionPosition;
-	private String latestDapaiPlayerId;
-	private int rangPai;
 
 	public PanValueObjectVO() {
 
 	}
 
-	public String getDizhuPlayerId() {
-		return dizhuPlayerId;
-	}
-
-	public void setDizhuPlayerId(String dizhuPlayerId) {
-		this.dizhuPlayerId = dizhuPlayerId;
+	public PanValueObjectVO(PanValueObject panValueObject) {
+		no = panValueObject.getNo();
+		doudizhuPlayerList = new ArrayList<>();
+		panValueObject.getPlayerList()
+				.forEach((doudizhuPlayer) -> doudizhuPlayerList.add(new DaboluoPlayerValueObjectVO(doudizhuPlayer)));
+		paiListValueObject = panValueObject.getPaiListValueObject();
 	}
 
 	public int getNo() {
@@ -48,30 +45,6 @@ public class PanValueObjectVO {
 
 	public void setPaiListValueObject(PaiListValueObject paiListValueObject) {
 		this.paiListValueObject = paiListValueObject;
-	}
-
-	public Position getActionPosition() {
-		return actionPosition;
-	}
-
-	public void setActionPosition(Position actionPosition) {
-		this.actionPosition = actionPosition;
-	}
-
-	public String getLatestDapaiPlayerId() {
-		return latestDapaiPlayerId;
-	}
-
-	public void setLatestDapaiPlayerId(String latestDapaiPlayerId) {
-		this.latestDapaiPlayerId = latestDapaiPlayerId;
-	}
-
-	public int getRangPai() {
-		return rangPai;
-	}
-
-	public void setRangPai(int rangPai) {
-		this.rangPai = rangPai;
 	}
 
 }

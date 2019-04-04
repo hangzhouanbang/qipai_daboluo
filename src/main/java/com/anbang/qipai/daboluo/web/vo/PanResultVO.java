@@ -11,10 +11,6 @@ public class PanResultVO {
 
 	private List<DaboluoPanPlayerResultVO> playerResultList;
 
-	private boolean dizhuying;
-
-	private String yingjiaPlayerId;// 赢家id
-
 	private int panNo;
 
 	private long finishTime;
@@ -28,8 +24,15 @@ public class PanResultVO {
 	public PanResultVO(PanResultDbo panResultDbo, PukeGameDbo pukeGameDbo) {
 		List<DaboluoPanPlayerResultDbo> list = panResultDbo.getPlayerResultList();
 		playerResultList = new ArrayList<>();
+		if (list != null) {
+			list.forEach((panPlayerResult) -> {
+				playerResultList.add(new DaboluoPanPlayerResultVO(pukeGameDbo.findPlayer(panPlayerResult.getPlayerId()),
+						panPlayerResult));
+			});
+		}
 		panNo = panResultDbo.getPanNo();
 		finishTime = panResultDbo.getFinishTime();
+		lastPanActionFrame = new PanActionFrameVO(panResultDbo.getPanActionFrame());
 	}
 
 	public List<DaboluoPanPlayerResultVO> getPlayerResultList() {
@@ -38,14 +41,6 @@ public class PanResultVO {
 
 	public void setPlayerResultList(List<DaboluoPanPlayerResultVO> playerResultList) {
 		this.playerResultList = playerResultList;
-	}
-
-	public boolean isDizhuying() {
-		return dizhuying;
-	}
-
-	public void setDizhuying(boolean dizhuying) {
-		this.dizhuying = dizhuying;
 	}
 
 	public int getPanNo() {
@@ -70,14 +65,6 @@ public class PanResultVO {
 
 	public void setLastPanActionFrame(PanActionFrameVO lastPanActionFrame) {
 		this.lastPanActionFrame = lastPanActionFrame;
-	}
-
-	public String getYingjiaPlayerId() {
-		return yingjiaPlayerId;
-	}
-
-	public void setYingjiaPlayerId(String yingjiaPlayerId) {
-		this.yingjiaPlayerId = yingjiaPlayerId;
 	}
 
 }

@@ -2,7 +2,7 @@ package com.anbang.qipai.daboluo.cqrs.c.domain.result;
 
 public class DaboluoPanPlayerResult {
 	private String playerId;
-	private int score;// 一盘结算分
+	private DaboluoJiesuanScore jiesuanScore;
 	private int totalScore;// 总分
 
 	public String getPlayerId() {
@@ -13,12 +13,12 @@ public class DaboluoPanPlayerResult {
 		this.playerId = playerId;
 	}
 
-	public int getScore() {
-		return score;
+	public DaboluoJiesuanScore getJiesuanScore() {
+		return jiesuanScore;
 	}
 
-	public void setScore(int score) {
-		this.score = score;
+	public void setJiesuanScore(DaboluoJiesuanScore jiesuanScore) {
+		this.jiesuanScore = jiesuanScore;
 	}
 
 	public int getTotalScore() {

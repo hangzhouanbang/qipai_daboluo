@@ -21,6 +21,7 @@ public class PukeGamePlayerVO {
 	private String headimgurl;
 	private String state;
 	private String onlineState;
+	private String position;
 	private int totalScore;
 
 	public PukeGamePlayerVO(PukeGamePlayerDbo dbo) {
@@ -29,6 +30,7 @@ public class PukeGamePlayerVO {
 		gender = dbo.getGender();
 		headimgurl = dbo.getHeadimgurl();
 		onlineState = dbo.getOnlineState().name();
+		position = dbo.getPosition().name();
 		totalScore = dbo.getTotalScore();
 		String sn = dbo.getState().name();
 		if (sn.equals(PlayerFinished.name)) {
@@ -113,6 +115,14 @@ public class PukeGamePlayerVO {
 
 	public void setTotalScore(int totalScore) {
 		this.totalScore = totalScore;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
 	}
 
 }

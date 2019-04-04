@@ -2,9 +2,9 @@ package com.anbang.qipai.daboluo.cqrs.c.service;
 
 import java.util.Map;
 
+import com.anbang.qipai.daboluo.cqrs.c.domain.BianXingWanFa;
 import com.anbang.qipai.daboluo.cqrs.c.domain.PukeGameValueObject;
 import com.anbang.qipai.daboluo.cqrs.c.domain.result.ReadyForGameResult;
-import com.dml.shisanshui.pai.wanfa.BianXingWanFa;
 
 public interface GameCmdService {
 

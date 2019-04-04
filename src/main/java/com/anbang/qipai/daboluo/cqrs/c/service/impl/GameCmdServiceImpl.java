@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.anbang.qipai.daboluo.cqrs.c.domain.BianXingWanFa;
 import com.anbang.qipai.daboluo.cqrs.c.domain.PukeGame;
 import com.anbang.qipai.daboluo.cqrs.c.domain.PukeGameValueObject;
 import com.anbang.qipai.daboluo.cqrs.c.domain.result.ReadyForGameResult;
@@ -27,7 +28,6 @@ import com.dml.mpgame.game.player.PlayerFinished;
 import com.dml.mpgame.game.ready.FixedNumberOfPlayersGameReadyStrategy;
 import com.dml.mpgame.game.watch.WatcherMap;
 import com.dml.mpgame.server.GameServer;
-import com.dml.shisanshui.pai.wanfa.BianXingWanFa;
 import com.dml.shisanshui.pan.PanActionFrame;
 
 @Component
@@ -66,6 +66,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 
 		newGame.setBackStrategy(new OnlineGameBackStrategy());
 		newGame.create(gameId, playerId);
+		newGame.updatePlayerPosition(playerId);
 		gameServer.playerCreateGame(newGame, playerId);
 
 		return new PukeGameValueObject(newGame);
@@ -104,6 +105,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 
 		newGame.setBackStrategy(new OnlineGameBackStrategy());
 		newGame.create(gameId, playerId);
+		newGame.updatePlayerPosition(playerId);
 		gameServer.playerCreateGame(newGame, playerId);
 
 		return new PukeGameValueObject(newGame);
@@ -112,13 +114,17 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	@Override
 	public PukeGameValueObject joinGame(String playerId, String gameId) throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
-		return gameServer.join(playerId, gameId);
+		PukeGameValueObject pukeGameValueObject = gameServer.join(playerId, gameId);
+		PukeGame newGame = (PukeGame) gameServer.findGame(gameId);
+		newGame.updatePlayerPosition(playerId);
+		return pukeGameValueObject;
 	}
 
 	@Override
 	public PukeGameValueObject leaveGameByHangup(String playerId) throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 		Game game = gameServer.findGamePlayerPlaying(playerId);
+		((PukeGame) game).updatePlayerPosition(playerId);
 		PukeGameValueObject pukeGameValueObject = gameServer.leaveByHangup(playerId);
 		if (game.getState().name().equals(FinishedByVote.name)) {// 有可能离开的时候正在投票，由于离开自动投弃权最终导致游戏结束
 			gameServer.finishGame(game.getId());
@@ -130,6 +136,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	public PukeGameValueObject leaveGame(String playerId) throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 		Game game = gameServer.findGamePlayerPlaying(playerId);
+		((PukeGame) game).updatePlayerPosition(playerId);
 		PukeGameValueObject pukeGameValueObject = gameServer.leaveByPlayer(playerId);
 		if (game.getState().name().equals(FinishedByVote.name) || game.getState().name().equals(Finished.name)) {// 有可能离开的时候正在投票，由于离开自动投弃权最终导致游戏结束
 			gameServer.finishGame(game.getId());
@@ -141,6 +148,7 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	public PukeGameValueObject leaveGameByOffline(String playerId) throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
 		Game game = gameServer.findGamePlayerPlaying(playerId);
+		((PukeGame) game).updatePlayerPosition(playerId);
 		PukeGameValueObject pukeGameValueObject = gameServer.leaveByHangup(playerId);
 		if (game.getState().name().equals(FinishedByVote.name)) {// 有可能离开的时候正在投票，由于离开自动投弃权最终导致游戏结束
 			gameServer.finishGame(game.getId());

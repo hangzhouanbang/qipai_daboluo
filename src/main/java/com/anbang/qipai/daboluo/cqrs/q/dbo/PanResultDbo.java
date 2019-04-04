@@ -26,6 +26,8 @@ public class PanResultDbo {
 		for (DaboluoPanPlayerResult playerResult : panResult.getPanPlayerResultList()) {
 			DaboluoPanPlayerResultDbo dbo = new DaboluoPanPlayerResultDbo();
 			dbo.setPlayerId(playerResult.getPlayerId());
+			dbo.setPlayerResult(playerResult);
+			dbo.setPlayer(panResult.findPlayer(playerResult.getPlayerId()));
 			playerResultList.add(dbo);
 		}
 		finishTime = panResult.getPanFinishTime();

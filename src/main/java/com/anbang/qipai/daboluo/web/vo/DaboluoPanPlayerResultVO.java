@@ -1,16 +1,25 @@
 package com.anbang.qipai.daboluo.web.vo;
 
+import com.anbang.qipai.daboluo.cqrs.q.dbo.DaboluoPanPlayerResultDbo;
+import com.anbang.qipai.daboluo.cqrs.q.dbo.PukeGamePlayerDbo;
+
 public class DaboluoPanPlayerResultVO {
 	private String playerId;
 	private String nickname;
 	private String headimgurl;
-	private DaboluoPlayerShoupaiVO allShoupai;
-	private boolean ying;
-	private int score;// 一盘结算分
+	private DaboluoJiesuanScoreVO score;// 一盘结算分
 	private int totalScore;// 总分
 
 	public DaboluoPanPlayerResultVO() {
 
+	}
+
+	public DaboluoPanPlayerResultVO(PukeGamePlayerDbo playerDbo, DaboluoPanPlayerResultDbo panPlayerResult) {
+		playerId = playerDbo.getPlayerId();
+		nickname = playerDbo.getNickname();
+		headimgurl = playerDbo.getHeadimgurl();
+		score = new DaboluoJiesuanScoreVO(panPlayerResult.getPlayerResult().getJiesuanScore());
+		totalScore = panPlayerResult.getPlayerResult().getTotalScore();
 	}
 
 	public String getPlayerId() {
@@ -37,19 +46,11 @@ public class DaboluoPanPlayerResultVO {
 		this.headimgurl = headimgurl;
 	}
 
-	public DaboluoPlayerShoupaiVO getAllShoupai() {
-		return allShoupai;
-	}
-
-	public void setAllShoupai(DaboluoPlayerShoupaiVO allShoupai) {
-		this.allShoupai = allShoupai;
-	}
-
-	public int getScore() {
+	public DaboluoJiesuanScoreVO getScore() {
 		return score;
 	}
 
-	public void setScore(int score) {
+	public void setScore(DaboluoJiesuanScoreVO score) {
 		this.score = score;
 	}
 
@@ -59,14 +60,6 @@ public class DaboluoPanPlayerResultVO {
 
 	public void setTotalScore(int totalScore) {
 		this.totalScore = totalScore;
-	}
-
-	public boolean isYing() {
-		return ying;
-	}
-
-	public void setYing(boolean ying) {
-		this.ying = ying;
 	}
 
 }

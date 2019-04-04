@@ -3,6 +3,7 @@ package com.anbang.qipai.daboluo.web.vo;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.anbang.qipai.daboluo.cqrs.c.domain.BianXingWanFa;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.PukeGameDbo;
 import com.dml.mpgame.game.Canceled;
 import com.dml.mpgame.game.Finished;
@@ -19,6 +20,12 @@ public class GameVO {
 	private String id;// 就是gameid
 	private int panshu;
 	private int renshu;
+	private boolean dqef;// 打枪二番
+	private boolean dqsf;// 打枪三番
+	private BianXingWanFa bx;// 大小王百变
+	private boolean bihuase;// 比花色
+	private boolean zidongzupai;// 自动组牌
+	private boolean yitiaolong;// 一条龙
 	private int panNo;
 	private List<PukeGamePlayerVO> playerList;
 	private String state;
@@ -31,6 +38,12 @@ public class GameVO {
 		id = pukeGameDbo.getId();
 		panshu = pukeGameDbo.getPanshu();
 		renshu = pukeGameDbo.getRenshu();
+		dqef = pukeGameDbo.isDqef();
+		dqsf = pukeGameDbo.isDqsf();
+		bx = pukeGameDbo.getBx();
+		bihuase = pukeGameDbo.isBihuase();
+		zidongzupai = pukeGameDbo.isZidongzupai();
+		yitiaolong = pukeGameDbo.isYitiaolong();
 		playerList = new ArrayList<>();
 		pukeGameDbo.getPlayers().forEach((dbo) -> playerList.add(new PukeGamePlayerVO(dbo)));
 		panNo = pukeGameDbo.getPanNo();
@@ -105,6 +118,54 @@ public class GameVO {
 
 	public void setState(String state) {
 		this.state = state;
+	}
+
+	public boolean isDqef() {
+		return dqef;
+	}
+
+	public void setDqef(boolean dqef) {
+		this.dqef = dqef;
+	}
+
+	public boolean isDqsf() {
+		return dqsf;
+	}
+
+	public void setDqsf(boolean dqsf) {
+		this.dqsf = dqsf;
+	}
+
+	public BianXingWanFa getBx() {
+		return bx;
+	}
+
+	public void setBx(BianXingWanFa bx) {
+		this.bx = bx;
+	}
+
+	public boolean isBihuase() {
+		return bihuase;
+	}
+
+	public void setBihuase(boolean bihuase) {
+		this.bihuase = bihuase;
+	}
+
+	public boolean isZidongzupai() {
+		return zidongzupai;
+	}
+
+	public void setZidongzupai(boolean zidongzupai) {
+		this.zidongzupai = zidongzupai;
+	}
+
+	public boolean isYitiaolong() {
+		return yitiaolong;
+	}
+
+	public void setYitiaolong(boolean yitiaolong) {
+		this.yitiaolong = yitiaolong;
 	}
 
 }

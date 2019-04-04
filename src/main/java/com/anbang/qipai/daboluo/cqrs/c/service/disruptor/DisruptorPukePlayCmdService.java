@@ -17,12 +17,13 @@ public class DisruptorPukePlayCmdService extends DisruptorCmdServiceBase impleme
 	private PukePlayCmdServiceImpl pukePlayCmdServiceImpl;
 
 	@Override
-	public PukeActionResult chupai(String playerId, String dianshuZuheIdx, Long actionTime) throws Exception {
-		CommonCommand cmd = new CommonCommand(PukePlayCmdServiceImpl.class.getName(), "chupai", playerId,
-				dianshuZuheIdx, actionTime);
+	public PukeActionResult chupai(String playerId, String toudaoIndex, String zhongdaoIndex, String weidaoIndex,
+			Long actionTime) throws Exception {
+		CommonCommand cmd = new CommonCommand(PukePlayCmdServiceImpl.class.getName(), "chupai", playerId, toudaoIndex,
+				zhongdaoIndex, weidaoIndex, actionTime);
 		DeferredResult<PukeActionResult> result = publishEvent(disruptorFactory.getCoreCmdDisruptor(), cmd, () -> {
 			PukeActionResult pukeActionResult = pukePlayCmdServiceImpl.chupai(cmd.getParameter(), cmd.getParameter(),
-					cmd.getParameter());
+					cmd.getParameter(), cmd.getParameter(), cmd.getParameter());
 			return pukeActionResult;
 		});
 		try {

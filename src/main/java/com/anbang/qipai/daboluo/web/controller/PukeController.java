@@ -91,7 +91,7 @@ public class PukeController {
 			vo.setMsg(e.getMessage());
 			return vo;
 		}
-		data.put("panActionFrame", new PanActionFrameVO());
+		data.put("panActionFrame", new PanActionFrameVO(panActionFrame));
 		return vo;
 	}
 
@@ -130,7 +130,7 @@ public class PukeController {
 
 	@RequestMapping(value = "/chupai")
 	@ResponseBody
-	public CommonVO da(String token, String dianshuZuheIdx) {
+	public CommonVO chupai(String token, String toudaoIndex, String zhongdaoIndex, String weidaoIndex) {
 		long startTime = System.currentTimeMillis();
 		CommonVO vo = new CommonVO();
 		Map data = new HashMap();
@@ -142,23 +142,24 @@ public class PukeController {
 			vo.setSuccess(false);
 			vo.setMsg("invalid token");
 			long endTime = System.currentTimeMillis();
-			logger.info("action:da," + "startTime:" + startTime + "," + "playerId:" + playerId + "," + "dianshuZuheIdx:"
-					+ dianshuZuheIdx + "," + "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + "," + "endTime:"
-					+ endTime + "," + "use:" + (endTime - startTime) + "ms");
+			logger.info("action:chupai," + "startTime:" + startTime + "," + "playerId:" + playerId + ","
+					+ "dianshuZuheIdx:" + toudaoIndex + zhongdaoIndex + weidaoIndex + "," + "success:" + vo.isSuccess()
+					+ ",msg:" + vo.getMsg() + "," + "endTime:" + endTime + "," + "use:" + (endTime - startTime) + "ms");
 			return vo;
 		}
 
 		PukeActionResult pukeActionResult;
 		String endFlag = "query";
 		try {
-			pukeActionResult = pukePlayCmdService.chupai(playerId, dianshuZuheIdx, System.currentTimeMillis());
+			pukeActionResult = pukePlayCmdService.chupai(playerId, toudaoIndex, zhongdaoIndex, weidaoIndex,
+					System.currentTimeMillis());
 		} catch (Exception e) {
 			vo.setSuccess(false);
 			vo.setMsg(e.getClass().getName());
 			long endTime = System.currentTimeMillis();
-			logger.info("action:da," + "startTime:" + startTime + "," + "playerId:" + playerId + "," + "dianshuZuheIdx:"
-					+ dianshuZuheIdx + "," + "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + "," + "endTime:"
-					+ endTime + "," + "use:" + (endTime - startTime) + "ms");
+			logger.info("action:chupai," + "startTime:" + startTime + "," + "playerId:" + playerId + ","
+					+ "dianshuZuheIdx:" + toudaoIndex + zhongdaoIndex + weidaoIndex + "," + "success:" + vo.isSuccess()
+					+ ",msg:" + vo.getMsg() + "," + "endTime:" + endTime + "," + "use:" + (endTime - startTime) + "ms");
 			return vo;
 		}
 		pukePlayQueryService.action(pukeActionResult);
@@ -205,9 +206,9 @@ public class PukeController {
 		hintWatcher(pukeActionResult.getPukeGame().getId(), endFlag);
 
 		long endTime = System.currentTimeMillis();
-		logger.info("action:da," + "startTime:" + startTime + "," + "playerId:" + playerId + "," + "dianshuZuheIdx:"
-				+ dianshuZuheIdx + "," + "success:" + vo.isSuccess() + ",msg:" + vo.getMsg() + "," + "endTime:"
-				+ endTime + "," + "use:" + (endTime - startTime) + "ms");
+		logger.info("action:chupai," + "startTime:" + startTime + "," + "playerId:" + playerId + "," + "dianshuZuheIdx:"
+				+ toudaoIndex + zhongdaoIndex + weidaoIndex + "," + "success:" + vo.isSuccess() + ",msg:" + vo.getMsg()
+				+ "," + "endTime:" + endTime + "," + "use:" + (endTime - startTime) + "ms");
 		return vo;
 	}
 

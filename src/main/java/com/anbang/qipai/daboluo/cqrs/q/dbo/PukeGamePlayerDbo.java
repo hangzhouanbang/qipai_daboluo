@@ -2,6 +2,7 @@ package com.anbang.qipai.daboluo.cqrs.q.dbo;
 
 import com.dml.mpgame.game.player.GamePlayerOnlineState;
 import com.dml.mpgame.game.player.GamePlayerState;
+import com.dml.shisanshui.position.Position;
 
 public class PukeGamePlayerDbo {
 	private String playerId;
@@ -10,6 +11,7 @@ public class PukeGamePlayerDbo {
 	private String headimgurl;
 	private GamePlayerState state;// 原来是 joined, readyToStart, playing, panFinished, finished
 	private GamePlayerOnlineState onlineState;
+	private Position position;
 	private int totalScore;
 
 	public String getPlayerId() {
@@ -66,6 +68,14 @@ public class PukeGamePlayerDbo {
 
 	public void setTotalScore(int totalScore) {
 		this.totalScore = totalScore;
+	}
+
+	public Position getPosition() {
+		return position;
+	}
+
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 
 }

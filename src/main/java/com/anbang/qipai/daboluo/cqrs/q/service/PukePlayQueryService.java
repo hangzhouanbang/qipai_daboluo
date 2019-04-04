@@ -3,6 +3,8 @@ package com.anbang.qipai.daboluo.cqrs.q.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import com.anbang.qipai.daboluo.cqrs.q.dao.JuResultDboDao;
 import com.anbang.qipai.daboluo.cqrs.q.dao.PanActionFrameDboDao;
 import com.anbang.qipai.daboluo.cqrs.q.dao.PanResultDboDao;
 import com.anbang.qipai.daboluo.cqrs.q.dao.PukeGameDboDao;
+import com.anbang.qipai.daboluo.cqrs.q.dao.memcached.MemcachedPanActionFrameDboDao;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.GameLatestPanActionFrameDbo;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.JuResultDbo;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.PanActionFrameDbo;
@@ -46,6 +49,11 @@ public class PukePlayQueryService {
 
 	@Autowired
 	private PanActionFrameDboDao panActionFrameDboDao;
+
+	@Autowired
+	private MemcachedPanActionFrameDboDao memcachedPanActionFrameDboDao;
+
+	private ExecutorService executorService = Executors.newCachedThreadPool();
 
 	@Autowired
 	private GameLatestPanActionFrameDboDao gameLatestPanActionFrameDboDao;
@@ -78,7 +86,11 @@ public class PukePlayQueryService {
 			int actionNo = panActionFrame.getNo();
 			PanActionFrameDbo panActionFrameDbo = new PanActionFrameDbo(gameId, panNo, actionNo);
 			panActionFrameDbo.setPanActionFrame(panActionFrame);
-			panActionFrameDboDao.save(panActionFrameDbo);
+			try {
+				memcachedPanActionFrameDboDao.save(panActionFrameDbo);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -97,7 +109,11 @@ public class PukePlayQueryService {
 		int actionNo = panActionFrame.getNo();
 		PanActionFrameDbo panActionFrameDbo = new PanActionFrameDbo(gameId, panNo, actionNo);
 		panActionFrameDbo.setPanActionFrame(panActionFrame);
-		panActionFrameDboDao.save(panActionFrameDbo);
+		try {
+			memcachedPanActionFrameDboDao.save(panActionFrameDbo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		// 盘出结果的话要记录结果
 		DaboluoPanResult daboluoPanResult = pukeActionResult.getPanResult();
@@ -105,6 +121,15 @@ public class PukePlayQueryService {
 			PanResultDbo panResultDbo = new PanResultDbo(gameId, daboluoPanResult);
 			panResultDbo.setPanActionFrame(panActionFrame);
 			panResultDboDao.save(panResultDbo);
+			executorService.submit(() -> {
+				try {
+					List<PanActionFrameDbo> frameList = memcachedPanActionFrameDboDao.findByGameIdAndActionNo(gameId,
+							actionNo);
+					panActionFrameDboDao.save(frameList);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
 			if (pukeActionResult.getJuResult() != null) {// 一切都结束了
 				// 要记录局结果
 				JuResultDbo juResultDbo = new JuResultDbo(gameId, panResultDbo, pukeActionResult.getJuResult());
@@ -129,7 +154,11 @@ public class PukePlayQueryService {
 			int actionNo = panActionFrame.getNo();
 			PanActionFrameDbo panActionFrameDbo = new PanActionFrameDbo(gameId, panNo, actionNo);
 			panActionFrameDbo.setPanActionFrame(panActionFrame);
-			panActionFrameDboDao.save(panActionFrameDbo);
+			try {
+				memcachedPanActionFrameDboDao.save(panActionFrameDbo);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

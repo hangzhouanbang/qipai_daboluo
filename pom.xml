@@ -48,12 +48,13 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/net.spy/spymemcached -->
+		<!-- https://mvnrepository.com/artifact/com.googlecode.xmemcached/xmemcached -->
 		<dependency>
-			<groupId>net.spy</groupId>
-			<artifactId>spymemcached</artifactId>
-			<version>2.12.3</version>
+			<groupId>com.googlecode.xmemcached</groupId>
+			<artifactId>xmemcached</artifactId>
+			<version>2.4.5</version>
 		</dependency>
+
 		<!-- 其它 -->
 		<dependency>
 			<groupId>flemish</groupId>

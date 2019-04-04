@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
+import com.anbang.qipai.daboluo.cqrs.c.domain.BianXingWanFa;
 import com.anbang.qipai.daboluo.cqrs.c.domain.PukeGameValueObject;
 import com.anbang.qipai.daboluo.cqrs.c.domain.result.ReadyForGameResult;
 import com.anbang.qipai.daboluo.cqrs.c.service.GameCmdService;
@@ -58,7 +59,6 @@ import com.dml.mpgame.game.extend.vote.VoteNotPassWhenPlaying;
 import com.dml.mpgame.game.player.GamePlayerOnlineState;
 import com.dml.mpgame.game.watch.WatchRecord;
 import com.dml.mpgame.game.watch.Watcher;
-import com.dml.shisanshui.pai.wanfa.BianXingWanFa;
 
 @RestController
 @RequestMapping("/game")

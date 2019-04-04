@@ -6,7 +6,7 @@ import com.anbang.qipai.daboluo.cqrs.q.dbo.PanActionFrameDbo;
 
 public interface PanActionFrameDboDao {
 
-	void save(PanActionFrameDbo dbo);
+	void save(List<PanActionFrameDbo> list);
 
 	List<PanActionFrameDbo> findByGameIdAndPanNo(String gameId, int panNo);
 

@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.anbang.qipai.daboluo.cqrs.c.domain.BianXingWanFa;
 import com.anbang.qipai.daboluo.cqrs.c.domain.PukeGameValueObject;
 import com.anbang.qipai.daboluo.plan.bean.PlayerInfo;
 import com.dml.mpgame.game.GamePlayerValueObject;
 import com.dml.mpgame.game.GameState;
-import com.dml.shisanshui.pai.wanfa.BianXingWanFa;
+import com.dml.shisanshui.position.Position;
 
 public class PukeGameDbo {
 	private String id;
@@ -42,6 +43,7 @@ public class PukeGameDbo {
 		panNo = pukeGame.getPanNo();
 		players = new ArrayList<>();
 		Map<String, Integer> playerTotalScoreMap = pukeGame.getPlayerTotalScoreMap();
+		Map<String, Position> playerIdPositionMap = pukeGame.getPlayerIdPositionMap();
 		for (GamePlayerValueObject playerValueObject : pukeGame.getPlayers()) {
 			String playerId = playerValueObject.getId();
 			PlayerInfo playerInfo = playerInfoMap.get(playerId);
@@ -54,6 +56,9 @@ public class PukeGameDbo {
 			playerDbo.setState(playerValueObject.getState());
 			if (playerTotalScoreMap.get(playerId) != null) {
 				playerDbo.setTotalScore(playerTotalScoreMap.get(playerId));
+			}
+			if (playerIdPositionMap.get(playerId) != null) {
+				playerDbo.setPosition(playerIdPositionMap.get(playerId));
 			}
 			players.add(playerDbo);
 		}

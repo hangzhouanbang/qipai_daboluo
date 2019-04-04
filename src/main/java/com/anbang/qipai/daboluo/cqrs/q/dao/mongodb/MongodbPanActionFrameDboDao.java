@@ -21,8 +21,8 @@ public class MongodbPanActionFrameDboDao implements PanActionFrameDboDao {
 	private MongoTemplate mongoTemplate;
 
 	@Override
-	public void save(PanActionFrameDbo dbo) {
-		mongoTemplate.insert(dbo);
+	public void save(List<PanActionFrameDbo> list) {
+		mongoTemplate.insertAll(list);
 	}
 
 	@Override

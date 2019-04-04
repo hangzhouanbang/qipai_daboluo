@@ -1,22 +1,45 @@
 package com.anbang.qipai.daboluo.web.vo;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.dml.shisanshui.pai.paixing.Dao;
+import com.dml.shisanshui.pai.paixing.PaixingSolution;
+import com.dml.shisanshui.player.ShisanshuiPlayerValueObject;
 import com.dml.shisanshui.position.Position;
 
 public class DaboluoPlayerValueObjectVO {
 	private String id;
 	private Position position;
 	private DaboluoPlayerShoupaiVO allShoupai;
-	private int[] shoupaiDianShuAmountArray;
-	private List<List<Integer>> shoupaiIdListForSortList;
-	private boolean guo;
-	private boolean watingForMe = false;
-	private boolean noPaiWarning;// 结束警报
-	private int rangPai;
+	/**
+	 * 玩家出牌方案
+	 */
+	private Map<String, Dao> chupaiSolutionCandidates = new HashMap<>();
+	/**
+	 * 玩家出牌提示
+	 */
+	private List<PaixingSolution> chupaiSolutionForTips = new ArrayList<>();
+
+	/**
+	 * 最终出牌
+	 */
+	private PaixingSolution chupaiSolution;
 
 	public DaboluoPlayerValueObjectVO() {
 
+	}
+
+	public DaboluoPlayerValueObjectVO(ShisanshuiPlayerValueObject shisanshuiPlayerValueObject) {
+		id = shisanshuiPlayerValueObject.getId();
+		position = shisanshuiPlayerValueObject.getPosition();
+		allShoupai = new DaboluoPlayerShoupaiVO(shisanshuiPlayerValueObject.getAllShoupai(),
+				shisanshuiPlayerValueObject.getTotalShoupai());
+		chupaiSolutionCandidates.putAll(shisanshuiPlayerValueObject.getChupaiSolutionCandidates());
+		chupaiSolutionForTips.addAll(shisanshuiPlayerValueObject.getChupaiSolutionForTips());
+		chupaiSolution = shisanshuiPlayerValueObject.getChupaiSolution();
 	}
 
 	public String getId() {
@@ -43,52 +66,28 @@ public class DaboluoPlayerValueObjectVO {
 		this.allShoupai = allShoupai;
 	}
 
-	public int[] getShoupaiDianShuAmountArray() {
-		return shoupaiDianShuAmountArray;
+	public Map<String, Dao> getChupaiSolutionCandidates() {
+		return chupaiSolutionCandidates;
 	}
 
-	public void setShoupaiDianShuAmountArray(int[] shoupaiDianShuAmountArray) {
-		this.shoupaiDianShuAmountArray = shoupaiDianShuAmountArray;
+	public void setChupaiSolutionCandidates(Map<String, Dao> chupaiSolutionCandidates) {
+		this.chupaiSolutionCandidates = chupaiSolutionCandidates;
 	}
 
-	public List<List<Integer>> getShoupaiIdListForSortList() {
-		return shoupaiIdListForSortList;
+	public List<PaixingSolution> getChupaiSolutionForTips() {
+		return chupaiSolutionForTips;
 	}
 
-	public void setShoupaiIdListForSortList(List<List<Integer>> shoupaiIdListForSortList) {
-		this.shoupaiIdListForSortList = shoupaiIdListForSortList;
+	public void setChupaiSolutionForTips(List<PaixingSolution> chupaiSolutionForTips) {
+		this.chupaiSolutionForTips = chupaiSolutionForTips;
 	}
 
-	public boolean isGuo() {
-		return guo;
+	public PaixingSolution getChupaiSolution() {
+		return chupaiSolution;
 	}
 
-	public void setGuo(boolean guo) {
-		this.guo = guo;
-	}
-
-	public boolean isWatingForMe() {
-		return watingForMe;
-	}
-
-	public void setWatingForMe(boolean watingForMe) {
-		this.watingForMe = watingForMe;
-	}
-
-	public boolean isNoPaiWarning() {
-		return noPaiWarning;
-	}
-
-	public void setNoPaiWarning(boolean noPaiWarning) {
-		this.noPaiWarning = noPaiWarning;
-	}
-
-	public int getRangPai() {
-		return rangPai;
-	}
-
-	public void setRangPai(int rangPai) {
-		this.rangPai = rangPai;
+	public void setChupaiSolution(PaixingSolution chupaiSolution) {
+		this.chupaiSolution = chupaiSolution;
 	}
 
 }
