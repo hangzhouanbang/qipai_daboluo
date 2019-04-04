@@ -76,10 +76,13 @@ public class DaboluoJiesuanScore {
 		calculateValue();
 	}
 
+	/**
+	 * 计算特殊牌型分数
+	 */
 	private void calculateValue() {
 		for (PlayerJiesuanScore playerJiesuanScore : playerDaoMap.values()) {
+			int jiesuan = playerJiesuanScore.getScore();
 			if (playerJiesuanScore.getWeidao() > 0) {
-				int jiesuan = playerJiesuanScore.getScore();
 				if (daqiangPlayerSet.contains(playerJiesuanScore.getPlayerId())) {
 					jiesuan *= dqbs;
 				}
@@ -95,11 +98,11 @@ public class DaboluoJiesuanScore {
 				if (wumei) {
 					jiesuan *= wmbs;
 				}
-				if (yitiaolong) {
-					jiesuan = 96;
-				}
-				playerJiesuanScore.setValue(jiesuan);
 			}
+			if (!playerJiesuanScore.hasWumei() && yitiaolong) {
+				jiesuan = 96;
+			}
+			playerJiesuanScore.setValue(jiesuan);
 			value += playerJiesuanScore.getValue();
 		}
 	}
@@ -173,8 +176,11 @@ public class DaboluoJiesuanScore {
 		PlayerJiesuanScore playerJiesuanScore = new PlayerJiesuanScore();
 		playerJiesuanScore.setPlayerId(playerId);
 		playerJiesuanScore.setToudao(calculatePlayerToudao(solution, daoComparator));
+		playerJiesuanScore.setToudaoPaixing(solution.getToudao().getPaixing());
 		playerJiesuanScore.setZhongdao(calculatePlayerZhongdao(solution, daoComparator));
+		playerJiesuanScore.setZhongdaoPaixing(solution.getZhongdao().getPaixing());
 		playerJiesuanScore.setWeidao(calculatePlayerWeidao(solution, daoComparator));
+		playerJiesuanScore.setWeidaoPaixing(solution.getWeidao().getPaixing());
 		playerJiesuanScore.calculateScore();
 		playerDaoMap.put(playerId, playerJiesuanScore);
 	}
