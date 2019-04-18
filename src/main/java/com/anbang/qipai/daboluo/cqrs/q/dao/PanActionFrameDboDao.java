@@ -9,6 +9,4 @@ public interface PanActionFrameDboDao {
 	void save(List<PanActionFrameDbo> list);
 
 	List<PanActionFrameDbo> findByGameIdAndPanNo(String gameId, int panNo);
-
-	PanActionFrameDbo findByGameIdAndPanNo(String gameId, int panNo, int actionNo);
 }

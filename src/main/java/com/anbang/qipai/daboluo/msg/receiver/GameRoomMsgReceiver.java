@@ -9,9 +9,17 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 
 import com.anbang.qipai.daboluo.cqrs.c.domain.PukeGameValueObject;
 import com.anbang.qipai.daboluo.cqrs.c.service.GameCmdService;
+import com.anbang.qipai.daboluo.cqrs.q.dbo.JuResultDbo;
+import com.anbang.qipai.daboluo.cqrs.q.dbo.PukeGameDbo;
+import com.anbang.qipai.daboluo.cqrs.q.dbo.PukeGamePlayerDbo;
 import com.anbang.qipai.daboluo.cqrs.q.service.PukeGameQueryService;
+import com.anbang.qipai.daboluo.cqrs.q.service.PukePlayQueryService;
 import com.anbang.qipai.daboluo.msg.channel.GameRoomSink;
 import com.anbang.qipai.daboluo.msg.msjobj.CommonMO;
+import com.anbang.qipai.daboluo.msg.msjobj.PukeHistoricalJuResult;
+import com.anbang.qipai.daboluo.msg.service.DaboluoGameMsgService;
+import com.anbang.qipai.daboluo.msg.service.DaboluoResultMsgService;
+import com.dml.mpgame.game.player.GamePlayerOnlineState;
 import com.google.gson.Gson;
 
 @EnableBinding(GameRoomSink.class)
@@ -23,6 +31,15 @@ public class GameRoomMsgReceiver {
 	@Autowired
 	private PukeGameQueryService pukeGameQueryService;
 
+	@Autowired
+	private PukePlayQueryService pukePlayQueryService;
+
+	@Autowired
+	private DaboluoResultMsgService daboluoResultMsgService;
+
+	@Autowired
+	private DaboluoGameMsgService daboluoGameMsgService;
+
 	private Gson gson = new Gson();
 
 	@StreamListener(GameRoomSink.DABOLUOGAMEROOM)
@@ -32,11 +49,26 @@ public class GameRoomMsgReceiver {
 		if ("gameIds".equals(msg)) {
 			List<String> gameIds = gson.fromJson(json, ArrayList.class);
 			for (String gameId : gameIds) {
-				PukeGameValueObject gameValueObject;
 				try {
-					gameValueObject = gameCmdService.finishGameImmediately(gameId);
-					pukeGameQueryService.finishGameImmediately(gameValueObject);
-				} catch (Exception e) {
+					PukeGameDbo pukeGameDbo = pukeGameQueryService.findPukeGameDboById(gameId);
+					boolean playerOnline = false;
+					for (PukeGamePlayerDbo player : pukeGameDbo.getPlayers()) {
+						if (GamePlayerOnlineState.online.equals(player.getOnlineState())) {
+							playerOnline = true;
+						}
+					}
+					if (playerOnline) {
+						daboluoGameMsgService.delay(gameId);
+					} else {
+						PukeGameValueObject gameValueObject = gameCmdService.finishGameImmediately(gameId);
+						pukeGameQueryService.finishGameImmediately(gameValueObject);
+						JuResultDbo juResultDbo = pukePlayQueryService.findJuResultDbo(gameId);
+						PukeHistoricalJuResult juResult = new PukeHistoricalJuResult(juResultDbo, pukeGameDbo);
+						daboluoResultMsgService.recordJuResult(juResult);
+						daboluoGameMsgService.gameFinished(gameId);
+					}
+				} catch (Throwable e) {
+					e.printStackTrace();
 				}
 			}
 		}
