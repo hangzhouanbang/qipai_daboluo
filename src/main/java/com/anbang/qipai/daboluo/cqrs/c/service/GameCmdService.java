@@ -14,6 +14,9 @@ public interface GameCmdService {
 	PukeGameValueObject newPukeGameLeaveAndQuit(String gameId, String playerId, Integer panshu, Integer renshu,
 			Boolean dqef, Boolean dqsf, BianXingWanFa bx, Boolean bihuase, Boolean zidongzupai, Boolean yitiaolong);
 
+	PukeGameValueObject newMajiangGamePlayerLeaveAndQuit(String gameId, String playerId, Integer panshu, Integer renshu,
+			Boolean dqef, Boolean dqsf, BianXingWanFa bx, Boolean bihuase, Boolean zidongzupai, Boolean yitiaolong);
+
 	PukeGameValueObject joinGame(String playerId, String gameId) throws Exception;
 
 	PukeGameValueObject leaveGame(String playerId) throws Exception;

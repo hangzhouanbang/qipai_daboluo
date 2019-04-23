@@ -285,4 +285,44 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 		watcherMap.recycleWatch(gameId);
 	}
 
+	@Override
+	public PukeGameValueObject newMajiangGamePlayerLeaveAndQuit(String gameId, String playerId, Integer panshu,
+			Integer renshu, Boolean dqef, Boolean dqsf, BianXingWanFa bx, Boolean bihuase, Boolean zidongzupai,
+			Boolean yitiaolong) {
+		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
+
+		PukeGame newGame = new PukeGame();
+
+		newGame.setPanshu(panshu);
+		newGame.setRenshu(renshu);
+		newGame.setFixedPlayerCount(renshu);
+		newGame.setDqef(dqef);
+		newGame.setDqsf(dqsf);
+		newGame.setBx(bx);
+		newGame.setBihuase(bihuase);
+		newGame.setZidongzupai(zidongzupai);
+		newGame.setYitiaolong(yitiaolong);
+
+		newGame.setVotePlayersFilter(new OnlineVotePlayersFilter());
+
+		newGame.setJoinStrategy(new FixedNumberOfPlayersGameJoinStrategy(renshu));
+		newGame.setReadyStrategy(new FixedNumberOfPlayersGameReadyStrategy(renshu));
+
+		newGame.setLeaveByOfflineStrategyAfterStart(new OfflineGameLeaveStrategy());
+		newGame.setLeaveByOfflineStrategyBeforeStart(new OfflineAndNotReadyGameLeaveStrategy());
+
+		newGame.setLeaveByHangupStrategyAfterStart(new OfflineGameLeaveStrategy());
+		newGame.setLeaveByHangupStrategyBeforeStart(new OfflineAndNotReadyGameLeaveStrategy());
+
+		newGame.setLeaveByPlayerStrategyAfterStart(new OfflineGameLeaveStrategy());
+		newGame.setLeaveByPlayerStrategyBeforeStart(new PlayerGameLeaveStrategy());
+
+		newGame.setBackStrategy(new OnlineGameBackStrategy());
+		newGame.create(gameId, playerId);
+		newGame.updatePlayerPosition(playerId);
+		gameServer.playerCreateGame(newGame, playerId);
+
+		return new PukeGameValueObject(newGame);
+	}
+
 }
