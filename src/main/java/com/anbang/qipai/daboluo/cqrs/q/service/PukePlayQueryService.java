@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.anbang.qipai.daboluo.cqrs.c.domain.PlayerActionFrameFilter;
 import com.anbang.qipai.daboluo.cqrs.c.domain.PukeGameValueObject;
 import com.anbang.qipai.daboluo.cqrs.c.domain.result.DaboluoPanResult;
 import com.anbang.qipai.daboluo.cqrs.c.domain.result.PukeActionResult;
@@ -70,6 +71,8 @@ public class PukePlayQueryService {
 	@Autowired
 	private GameLatestPanActionFrameDboDao gameLatestPanActionFrameDboDao;
 
+	private PlayerActionFrameFilter pf = new PlayerActionFrameFilter();
+
 	public PanActionFrame findAndFilterCurrentPanValueObjectForPlayer(String gameId, String playerId) throws Exception {
 		PukeGameDbo pukeGameDbo = memcachedPukeGameDboDao.findById(gameId);
 		if (!(pukeGameDbo.getState().name().equals(Playing.name)
@@ -78,7 +81,7 @@ public class PukePlayQueryService {
 			throw new Exception("game not playing");
 		}
 		GameLatestPanActionFrameDbo frame = gameLatestPanActionFrameDboDao.findById(gameId);
-		PanActionFrame panActionFrame = frame.getPanActionFrame();
+		PanActionFrame panActionFrame = pf.filter(frame, playerId);
 		return panActionFrame;
 	}
 

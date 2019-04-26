@@ -88,7 +88,9 @@ public class PukeGame extends FixedPlayersMultipanAndVotetofinishGame {
 		daboluoChupaiDaoCalculator.setBx(bx);
 		daboluoChupaiDaoCalculator.setBihuase(bihuase);
 		ju.setChupaiDaoCalculator(daboluoChupaiDaoCalculator);
-		ju.setChupaiPaixingSolutionFilter(new DaboluoChupaiPaixingSolutionFilter());
+		DaboluoChupaiPaixingSolutionFilter daboluoChupaiPaixingSolutionFilter = new DaboluoChupaiPaixingSolutionFilter();
+		daboluoChupaiPaixingSolutionFilter.setDaoComparator(typeCodeDaoComparator);
+		ju.setChupaiPaixingSolutionFilter(daboluoChupaiPaixingSolutionFilter);
 
 		DaboluoCurrentPanResultBuilder daboluoCurrentPanResultBuilder = new DaboluoCurrentPanResultBuilder();
 		daboluoCurrentPanResultBuilder.setDaoComparator(typeCodeDaoComparator);

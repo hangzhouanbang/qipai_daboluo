@@ -13,10 +13,104 @@ spring:
           autoCreateTopics: true
           autoAddPartitions: false
         bindings:
-          
+          daboluoGame:
+            producer:
+              configuration:
+                request:
+                  timeout:
+                    ms: 30000
+                linger:
+                  ms: 5
+                batch:
+                  size: 16384
+          daboluoResult:
+            producer:
+              configuration:
+                request:
+                  timeout:
+                    ms: 30000
+                linger:
+                  ms: 5
+                batch:
+                  size: 16384
+          memberGoldsAccounting:
+            producer:
+              configuration:
+                request:
+                  timeout:
+                    ms: 30000
+                linger:
+                  ms: 5
+                batch:
+                  size: 16384
+          wisecrack:
+            producer:
+              configuration:
+                request:
+                  timeout:
+                    ms: 30000
+                linger:
+                  ms: 5
+                batch:
+                  size: 16384
+          watchRecord:
+            producer:
+              configuration:
+                request:
+                  timeout:
+                    ms: 30000
+                linger:
+                  ms: 5
+                batch:
+                  size: 16384
 
       bindings:
-        
+        daboluoGame:
+          destination: daboluoGame
+          contentType: application/json
+          producer:
+            partitionCount: 1
+        daboluoResult:
+          destination: daboluoResult
+          contentType: application/json
+          producer:
+            partitionCount: 1
+        memberGoldsAccounting:
+          destination: memberGoldsAccounting
+          contentType: application/json
+          producer:
+            partitionCount: 1
+        members:
+          destination: members
+          group: qipai-daboluo
+          consumer:
+            concurrency: 1
+            partitioned: false
+          contentType: application/json
+        daboluoGameRoom:
+          destination: daboluoGameRoom
+          group: qipai-daboluo
+          consumer:
+            concurrency: 1
+            partitioned: false
+          contentType: application/json
+        memberGolds:
+          destination: memberGolds
+          group: qipai-daboluo
+          consumer:
+            concurrency: 1
+            partitioned: false
+          contentType: application/json
+        wisecrack:
+          destination: wisecrack
+          contentType: application/json
+          producer:
+            partitionCount: 1
+        watchRecord:
+          destination: watchRecord
+          contentType: application/json
+          producer:
+            partitionCount: 1
 memcache:
   ip: 127.0.0.1
   port: 11211
