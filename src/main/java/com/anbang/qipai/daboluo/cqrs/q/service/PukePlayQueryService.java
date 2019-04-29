@@ -188,6 +188,10 @@ public class PukePlayQueryService {
 		return memcachedPanResultDboDao.findByGameIdAndPanNo(gameId, panNo);
 	}
 
+	public PanResultDbo findPanResultDboForBackPlay(String gameId, int panNo) throws Exception {
+		return panResultDboDao.findByGameIdAndPanNo(gameId, panNo);
+	}
+
 	public JuResultDbo findJuResultDbo(String gameId) throws Exception {
 		return memcachedJuResultDboDao.findByGameId(gameId);
 	}

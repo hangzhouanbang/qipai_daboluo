@@ -61,6 +61,10 @@ public class PukeGameQueryService {
 		return memcachedPukeGameDboDao.findById(gameId);
 	}
 
+	public PukeGameDbo findPukeGameDboByIdForBackPlay(String gameId) throws Exception {
+		return pukeGameDboDao.findById(gameId);
+	}
+
 	public void newPukeGame(PukeGameValueObject pukeGame) throws Exception {
 		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
 		pukeGame.allPlayerIds().forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));

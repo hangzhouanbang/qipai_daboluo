@@ -867,7 +867,7 @@ public class GameController {
 		vo.setData(data);
 		PukeGameDbo pukeGameDbo;
 		try {
-			pukeGameDbo = pukeGameQueryService.findPukeGameDboById(gameId);
+			pukeGameDbo = pukeGameQueryService.findPukeGameDboByIdForBackPlay(gameId);
 		} catch (Exception e) {
 			vo.setSuccess(false);
 			vo.setMsg(e.getClass().getName());
@@ -881,7 +881,7 @@ public class GameController {
 		data.put("framelist", frameVOList);
 		PanResultDbo panResultDbo;
 		try {
-			panResultDbo = pukePlayQueryService.findPanResultDbo(gameId, panNo);
+			panResultDbo = pukePlayQueryService.findPanResultDboForBackPlay(gameId, panNo);
 		} catch (Exception e) {
 			vo.setSuccess(false);
 			vo.setMsg(e.getClass().getName());
