@@ -3,10 +3,16 @@ package com.anbang.qipai.daboluo.cqrs.q.dbo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.anbang.qipai.daboluo.cqrs.c.domain.result.DaboluoPanPlayerResult;
 import com.anbang.qipai.daboluo.cqrs.c.domain.result.DaboluoPanResult;
 import com.dml.shisanshui.pan.PanActionFrame;
 
+@Document
+@CompoundIndexes({ @CompoundIndex(name = "gameId_1_panNo_1", def = "{'gameId': 1, 'panNo': 1}") })
 public class PanResultDbo {
 	private String id;
 	private String gameId;

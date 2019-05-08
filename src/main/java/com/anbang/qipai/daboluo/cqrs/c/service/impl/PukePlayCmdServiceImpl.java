@@ -10,10 +10,17 @@ import com.anbang.qipai.daboluo.cqrs.c.service.PukePlayCmdService;
 import com.dml.mpgame.game.Playing;
 import com.dml.mpgame.game.player.PlayerNotInGameException;
 import com.dml.mpgame.server.GameServer;
+import com.dml.shisanshui.pai.paixing.Dao;
 import com.dml.shisanshui.pan.PanActionFrame;
 
 @Component
 public class PukePlayCmdServiceImpl extends CmdServiceBase implements PukePlayCmdService {
+
+	public Dao findDaoByGameIdAndPlayerIdAndIndex(String gameId, String playerId, String index) throws Exception {
+		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
+		PukeGame pukeGame = (PukeGame) gameServer.findGame(gameId);
+		return pukeGame.findDaoByPlayerIdAndIndex(playerId, index);
+	}
 
 	@Override
 	public PukeActionResult chupai(String playerId, String toudaoIndex, String zhongdaoIndex, String weidaoIndex,

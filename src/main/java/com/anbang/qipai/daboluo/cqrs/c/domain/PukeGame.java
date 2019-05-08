@@ -19,10 +19,12 @@ import com.dml.mpgame.game.player.PlayerPlaying;
 import com.dml.shisanshui.gameprocess.AllPlayerChupaiPanFinishiDeterminer;
 import com.dml.shisanshui.gameprocess.FixedPanNumbersJuFinishiDeterminer;
 import com.dml.shisanshui.ju.Ju;
+import com.dml.shisanshui.pai.paixing.Dao;
 import com.dml.shisanshui.pai.paixing.comparator.TypeCodeDaoComparator;
 import com.dml.shisanshui.pan.PanActionFrame;
 import com.dml.shisanshui.position.Position;
 import com.dml.shisanshui.preparedapai.fapai.EveryPlayerShisanzhangFapaiStrategy;
+import com.dml.shisanshui.preparedapai.lipai.DianshuOrHuaseShoupaiSortStrategy;
 import com.dml.shisanshui.preparedapai.lluanpai.RandomLuanPaiStrategy;
 import com.dml.shisanshui.preparedapai.zuowei.JoinGameZuoweiDeterminer;
 
@@ -62,7 +64,9 @@ public class PukeGame extends FixedPlayersMultipanAndVotetofinishGame {
 			}
 		}
 		playerIdPositionMap = positionMap;
-		playerIdPositionMap.put(playerId, positionList.remove(0));
+		if (!positionList.isEmpty()) {
+			playerIdPositionMap.put(playerId, positionList.remove(0));
+		}
 	}
 
 	public PanActionFrame createJuAndStartFirstPan(long startTime) throws Exception {
@@ -80,7 +84,7 @@ public class PukeGame extends FixedPlayersMultipanAndVotetofinishGame {
 		ju.setLuanpaiStrategyForNextPan(new RandomLuanPaiStrategy(startTime + 1));
 		ju.setFapaiStrategyForFirstPan(new EveryPlayerShisanzhangFapaiStrategy());
 		ju.setFapaiStrategyForNextPan(new EveryPlayerShisanzhangFapaiStrategy());
-
+		ju.setShoupaiSortStrategy(new DianshuOrHuaseShoupaiSortStrategy());
 		TypeCodeDaoComparator typeCodeDaoComparator = new TypeCodeDaoComparator();
 		ju.setDaoComparator(typeCodeDaoComparator);
 
@@ -102,6 +106,10 @@ public class PukeGame extends FixedPlayersMultipanAndVotetofinishGame {
 		ju.setCurrentPanResultBuilder(daboluoCurrentPanResultBuilder);
 		ju.setJuResultBuilder(new DaboluoJuResultBuilder());
 		return ju.startFirstPan(allPlayerIds(), startTime);
+	}
+
+	public Dao findDaoByPlayerIdAndIndex(String playerId, String index) throws Exception {
+		return ju.findDaoByPlayerIdAndIndex(playerId, index);
 	}
 
 	public PukeActionResult chupai(String playerId, String toudaoIndex, String zhongdaoIndex, String weidaoIndex,

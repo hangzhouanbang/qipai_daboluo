@@ -8,7 +8,7 @@ import com.dml.shisanshui.pan.PanValueObject;
 
 public class PanValueObjectVO {
 	private int no;
-	private List<DaboluoPlayerValueObjectVO> doudizhuPlayerList;
+	private List<DaboluoPlayerValueObjectVO> daboluoPlayerList;
 	private PaiListValueObject paiListValueObject;
 
 	public PanValueObjectVO() {
@@ -17,9 +17,9 @@ public class PanValueObjectVO {
 
 	public PanValueObjectVO(PanValueObject panValueObject) {
 		no = panValueObject.getNo();
-		doudizhuPlayerList = new ArrayList<>();
+		daboluoPlayerList = new ArrayList<>();
 		panValueObject.getPlayerList()
-				.forEach((doudizhuPlayer) -> doudizhuPlayerList.add(new DaboluoPlayerValueObjectVO(doudizhuPlayer)));
+				.forEach((doudizhuPlayer) -> daboluoPlayerList.add(new DaboluoPlayerValueObjectVO(doudizhuPlayer)));
 		paiListValueObject = panValueObject.getPaiListValueObject();
 	}
 
@@ -31,12 +31,12 @@ public class PanValueObjectVO {
 		this.no = no;
 	}
 
-	public List<DaboluoPlayerValueObjectVO> getDoudizhuPlayerList() {
-		return doudizhuPlayerList;
+	public List<DaboluoPlayerValueObjectVO> getDaboluoPlayerList() {
+		return daboluoPlayerList;
 	}
 
-	public void setDoudizhuPlayerList(List<DaboluoPlayerValueObjectVO> doudizhuPlayerList) {
-		this.doudizhuPlayerList = doudizhuPlayerList;
+	public void setDaboluoPlayerList(List<DaboluoPlayerValueObjectVO> daboluoPlayerList) {
+		this.daboluoPlayerList = daboluoPlayerList;
 	}
 
 	public PaiListValueObject getPaiListValueObject() {

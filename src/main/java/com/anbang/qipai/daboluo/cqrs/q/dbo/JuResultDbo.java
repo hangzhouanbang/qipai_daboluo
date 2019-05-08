@@ -1,10 +1,15 @@
 package com.anbang.qipai.daboluo.cqrs.q.dbo;
 
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.anbang.qipai.daboluo.cqrs.c.domain.result.DaboluoJuResult;
 
+@Document
 public class JuResultDbo {
 
 	private String id;
+	@Indexed(unique = false)
 	private String gameId;
 	private PanResultDbo lastPanResult;
 	private DaboluoJuResult juResult;

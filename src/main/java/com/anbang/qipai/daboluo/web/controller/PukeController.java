@@ -19,6 +19,7 @@ import com.anbang.qipai.daboluo.cqrs.c.domain.result.ReadyToNextPanResult;
 import com.anbang.qipai.daboluo.cqrs.c.service.GameCmdService;
 import com.anbang.qipai.daboluo.cqrs.c.service.PlayerAuthService;
 import com.anbang.qipai.daboluo.cqrs.c.service.PukePlayCmdService;
+import com.anbang.qipai.daboluo.cqrs.c.service.impl.PukePlayCmdServiceImpl;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.JuResultDbo;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.PanResultDbo;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.PukeGameDbo;
@@ -37,11 +38,13 @@ import com.anbang.qipai.daboluo.websocket.QueryScope;
 import com.anbang.qipai.daboluo.websocket.WatchQueryScope;
 import com.dml.mpgame.game.Playing;
 import com.dml.mpgame.game.player.GamePlayerOnlineState;
+import com.dml.shisanshui.pai.paixing.Dao;
 import com.dml.shisanshui.pan.PanActionFrame;
 
 @RestController
 @RequestMapping("/pk")
 public class PukeController {
+
 	@Autowired
 	private PlayerAuthService playerAuthService;
 
@@ -65,6 +68,9 @@ public class PukeController {
 
 	@Autowired
 	private GameCmdService gameCmdService;
+
+	@Autowired
+	private PukePlayCmdServiceImpl pukePlayCmdServiceImpl;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -96,6 +102,33 @@ public class PukeController {
 	}
 
 	/**
+	 * 查询一道信息
+	 */
+	@RequestMapping(value = "/query_dao")
+	@ResponseBody
+	public CommonVO querydao(String token, String gameId, String index) {
+		CommonVO vo = new CommonVO();
+		Map data = new HashMap();
+		vo.setData(data);
+		String playerId = playerAuthService.getPlayerIdByToken(token);
+		if (playerId == null) {
+			vo.setSuccess(false);
+			vo.setMsg("invalid token");
+			return vo;
+		}
+		Dao dao;
+		try {
+			dao = pukePlayCmdServiceImpl.findDaoByGameIdAndPlayerIdAndIndex(gameId, playerId, index);
+		} catch (Exception e) {
+			vo.setSuccess(false);
+			vo.setMsg(e.getMessage());
+			return vo;
+		}
+		data.put("dao", dao);
+		return vo;
+	}
+
+	/**
 	 * @param gameId
 	 * @param panNo
 	 *            0代表不知道盘号，那么就取最新的一盘
@@ -107,19 +140,12 @@ public class PukeController {
 		CommonVO vo = new CommonVO();
 		Map data = new HashMap();
 		vo.setData(data);
-		PukeGameDbo pukeGameDbo;
-		try {
-			pukeGameDbo = pukeGameQueryService.findPukeGameDboById(gameId);
-			if (panNo == 0) {
-				panNo = pukeGameDbo.getPanNo();
-			}
-			PanResultDbo panResultDbo = pukePlayQueryService.findPanResultDbo(gameId, panNo);
-			data.put("panResult", new PanResultVO(panResultDbo, pukeGameDbo));
-		} catch (Exception e) {
-			vo.setSuccess(false);
-			vo.setMsg(e.getClass().getName());
-			return vo;
+		PukeGameDbo pukeGameDbo = pukeGameQueryService.findPukeGameDboById(gameId);
+		if (panNo == 0) {
+			panNo = pukeGameDbo.getPanNo();
 		}
+		PanResultDbo panResultDbo = pukePlayQueryService.findPanResultDbo(gameId, panNo);
+		data.put("panResult", new PanResultVO(panResultDbo, pukeGameDbo));
 		return vo;
 	}
 
@@ -129,16 +155,9 @@ public class PukeController {
 		CommonVO vo = new CommonVO();
 		Map data = new HashMap();
 		vo.setData(data);
-		PukeGameDbo pukeGameDbo;
-		try {
-			pukeGameDbo = pukeGameQueryService.findPukeGameDboById(gameId);
-			JuResultDbo juResultDbo = pukePlayQueryService.findJuResultDbo(gameId);
-			data.put("juResult", new JuResultVO(juResultDbo, pukeGameDbo));
-		} catch (Exception e) {
-			vo.setSuccess(false);
-			vo.setMsg(e.getClass().getName());
-			return vo;
-		}
+		PukeGameDbo pukeGameDbo = pukeGameQueryService.findPukeGameDboById(gameId);
+		JuResultDbo juResultDbo = pukePlayQueryService.findJuResultDbo(gameId);
+		data.put("juResult", new JuResultVO(juResultDbo, pukeGameDbo));
 		return vo;
 	}
 
@@ -176,42 +195,30 @@ public class PukeController {
 					+ ",msg:" + vo.getMsg() + "," + "endTime:" + endTime + "," + "use:" + (endTime - startTime) + "ms");
 			return vo;
 		}
-		try {
-			pukePlayQueryService.action(pukeActionResult);
-		} catch (Exception e) {
-			vo.setSuccess(false);
-			vo.setMsg(e.getClass().getName());
-			return vo;
-		}
+		pukePlayQueryService.action(pukeActionResult);
 
 		if (pukeActionResult.getPanResult() == null) {// 盘没结束
 			queryScopes.add(QueryScope.gameInfo.name());
 			queryScopes.add(QueryScope.panForMe.name());
 		} else {// 盘结束了
 			String gameId = pukeActionResult.getPukeGame().getId();
-			try {
-				PukeGameDbo pukeGameDbo = pukeGameQueryService.findPukeGameDboById(gameId);
-				if (pukeActionResult.getJuResult() != null) {// 局也结束了
-					JuResultDbo juResultDbo = pukePlayQueryService.findJuResultDbo(gameId);
-					PukeHistoricalJuResult juResult = new PukeHistoricalJuResult(juResultDbo, pukeGameDbo);
-					daboluoResultMsgService.recordJuResult(juResult);
+			PukeGameDbo pukeGameDbo = pukeGameQueryService.findPukeGameDboById(gameId);
+			if (pukeActionResult.getJuResult() != null) {// 局也结束了
+				JuResultDbo juResultDbo = pukePlayQueryService.findJuResultDbo(gameId);
+				PukeHistoricalJuResult juResult = new PukeHistoricalJuResult(juResultDbo, pukeGameDbo);
+				daboluoResultMsgService.recordJuResult(juResult);
 
-					gameMsgService.gameFinished(gameId);
-					queryScopes.add(QueryScope.juResult.name());
-					endFlag = WatchQueryScope.watchEnd.name();
-				} else {
-					queryScopes.add(QueryScope.gameInfo.name());
-					queryScopes.add(QueryScope.panResult.name());
-					endFlag = WatchQueryScope.panResult.name();
-					PanResultDbo panResultDbo = pukePlayQueryService.findPanResultDbo(gameId,
-							pukeActionResult.getPanResult().getPan().getNo());
-					PukeHistoricalPanResult panResult = new PukeHistoricalPanResult(panResultDbo, pukeGameDbo);
-					daboluoResultMsgService.recordPanResult(panResult);
-				}
-			} catch (Exception e) {
-				vo.setSuccess(false);
-				vo.setMsg(e.getClass().getName());
-				return vo;
+				gameMsgService.gameFinished(gameId);
+				queryScopes.add(QueryScope.juResult.name());
+				endFlag = WatchQueryScope.watchEnd.name();
+			} else {
+				queryScopes.add(QueryScope.gameInfo.name());
+				queryScopes.add(QueryScope.panResult.name());
+				endFlag = WatchQueryScope.panResult.name();
+				PanResultDbo panResultDbo = pukePlayQueryService.findPanResultDbo(gameId,
+						pukeActionResult.getPanResult().getPan().getNo());
+				PukeHistoricalPanResult panResult = new PukeHistoricalPanResult(panResultDbo, pukeGameDbo);
+				daboluoResultMsgService.recordPanResult(panResult);
 			}
 			gameMsgService.panFinished(pukeActionResult.getPukeGame(),
 					pukeActionResult.getPanActionFrame().getPanAfterAction());
@@ -232,7 +239,8 @@ public class PukeController {
 		hintWatcher(pukeActionResult.getPukeGame().getId(), endFlag);
 
 		long endTime = System.currentTimeMillis();
-		logger.info("action:chupai," + "startTime:" + startTime + "," + "playerId:" + playerId + "," + "dianshuZuheIdx:"
+		logger.info("action:chupai," + "startTime:" + startTime + "," + "gameId:"
+				+ pukeActionResult.getPukeGame().getId() + "," + "playerId:" + playerId + "," + "dianshuZuheIdx:"
 				+ toudaoIndex + zhongdaoIndex + weidaoIndex + "," + "success:" + vo.isSuccess() + ",msg:" + vo.getMsg()
 				+ "," + "endTime:" + endTime + "," + "use:" + (endTime - startTime) + "ms");
 		return vo;
@@ -259,13 +267,7 @@ public class PukeController {
 			vo.setMsg(e.getClass().getName());
 			return vo;
 		}
-		try {
-			pukePlayQueryService.readyToNextPan(readyToNextPanResult);
-		} catch (Exception e) {
-			vo.setSuccess(false);
-			vo.setMsg(e.getClass().getName());
-			return vo;
-		}
+		pukePlayQueryService.readyToNextPan(readyToNextPanResult);
 
 		// 通知其他人
 		for (String otherPlayerId : readyToNextPanResult.getPukeGame().allPlayerIds()) {

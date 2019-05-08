@@ -115,10 +115,10 @@ public class GameCmdServiceImpl extends CmdServiceBase implements GameCmdService
 	@Override
 	public PukeGameValueObject joinGame(String playerId, String gameId) throws Exception {
 		GameServer gameServer = singletonEntityRepository.getEntity(GameServer.class);
-		PukeGameValueObject pukeGameValueObject = gameServer.join(playerId, gameId);
+		gameServer.join(playerId, gameId);
 		PukeGame newGame = (PukeGame) gameServer.findGame(gameId);
 		newGame.updatePlayerPosition(playerId);
-		return pukeGameValueObject;
+		return new PukeGameValueObject(newGame);
 	}
 
 	@Override

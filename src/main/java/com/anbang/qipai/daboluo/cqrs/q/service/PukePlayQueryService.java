@@ -3,8 +3,6 @@ package com.anbang.qipai.daboluo.cqrs.q.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,10 +18,6 @@ import com.anbang.qipai.daboluo.cqrs.q.dao.JuResultDboDao;
 import com.anbang.qipai.daboluo.cqrs.q.dao.PanActionFrameDboDao;
 import com.anbang.qipai.daboluo.cqrs.q.dao.PanResultDboDao;
 import com.anbang.qipai.daboluo.cqrs.q.dao.PukeGameDboDao;
-import com.anbang.qipai.daboluo.cqrs.q.dao.memcached.MemcachedJuResultDboDao;
-import com.anbang.qipai.daboluo.cqrs.q.dao.memcached.MemcachedPanActionFrameDboDao;
-import com.anbang.qipai.daboluo.cqrs.q.dao.memcached.MemcachedPanResultDboDao;
-import com.anbang.qipai.daboluo.cqrs.q.dao.memcached.MemcachedPukeGameDboDao;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.GameLatestPanActionFrameDbo;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.JuResultDbo;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.PanActionFrameDbo;
@@ -55,26 +49,12 @@ public class PukePlayQueryService {
 	private PanActionFrameDboDao panActionFrameDboDao;
 
 	@Autowired
-	private MemcachedPukeGameDboDao memcachedPukeGameDboDao;
-
-	@Autowired
-	private MemcachedPanResultDboDao memcachedPanResultDboDao;
-
-	@Autowired
-	private MemcachedJuResultDboDao memcachedJuResultDboDao;
-
-	@Autowired
-	private MemcachedPanActionFrameDboDao memcachedPanActionFrameDboDao;
-
-	private ExecutorService executorService = Executors.newCachedThreadPool();
-
-	@Autowired
 	private GameLatestPanActionFrameDboDao gameLatestPanActionFrameDboDao;
 
 	private PlayerActionFrameFilter pf = new PlayerActionFrameFilter();
 
 	public PanActionFrame findAndFilterCurrentPanValueObjectForPlayer(String gameId, String playerId) throws Exception {
-		PukeGameDbo pukeGameDbo = memcachedPukeGameDboDao.findById(gameId);
+		PukeGameDbo pukeGameDbo = pukeGameDboDao.findById(gameId);
 		if (!(pukeGameDbo.getState().name().equals(Playing.name)
 				|| pukeGameDbo.getState().name().equals(VotingWhenPlaying.name)
 				|| pukeGameDbo.getState().name().equals(VoteNotPassWhenPlaying.name))) {
@@ -85,12 +65,12 @@ public class PukePlayQueryService {
 		return panActionFrame;
 	}
 
-	public void readyForGame(ReadyForGameResult readyForGameResult) throws Exception {
+	public void readyForGame(ReadyForGameResult readyForGameResult) {
 		PukeGameValueObject pukeGame = readyForGameResult.getPukeGame();
 		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
 		pukeGame.allPlayerIds().forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
 		PukeGameDbo pukeGameDbo = new PukeGameDbo(pukeGame, playerInfoMap);
-		memcachedPukeGameDboDao.save(pukeGameDbo);
+		pukeGameDboDao.save(pukeGameDbo);
 
 		if (readyForGameResult.getFirstActionFrame() != null) {
 			PanActionFrame panActionFrame = readyForGameResult.getFirstActionFrame();
@@ -101,20 +81,16 @@ public class PukePlayQueryService {
 			int actionNo = panActionFrame.getNo();
 			PanActionFrameDbo panActionFrameDbo = new PanActionFrameDbo(gameId, panNo, actionNo);
 			panActionFrameDbo.setPanActionFrame(panActionFrame);
-			try {
-				memcachedPanActionFrameDboDao.save(panActionFrameDbo);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			panActionFrameDboDao.save(panActionFrameDbo);
 		}
 	}
 
-	public void action(PukeActionResult pukeActionResult) throws Exception {
+	public void action(PukeActionResult pukeActionResult) {
 		PukeGameValueObject pukeGame = pukeActionResult.getPukeGame();
 		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
 		pukeGame.allPlayerIds().forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
 		PukeGameDbo pukeGameDbo = new PukeGameDbo(pukeGame, playerInfoMap);
-		memcachedPukeGameDboDao.save(pukeGameDbo);
+		pukeGameDboDao.save(pukeGameDbo);
 
 		String gameId = pukeGameDbo.getId();
 		PanActionFrame panActionFrame = pukeActionResult.getPanActionFrame();
@@ -124,48 +100,28 @@ public class PukePlayQueryService {
 		int actionNo = panActionFrame.getNo();
 		PanActionFrameDbo panActionFrameDbo = new PanActionFrameDbo(gameId, panNo, actionNo);
 		panActionFrameDbo.setPanActionFrame(panActionFrame);
-		try {
-			memcachedPanActionFrameDboDao.save(panActionFrameDbo);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		panActionFrameDboDao.save(panActionFrameDbo);
 
 		// 盘出结果的话要记录结果
 		DaboluoPanResult daboluoPanResult = pukeActionResult.getPanResult();
 		if (daboluoPanResult != null) {
 			PanResultDbo panResultDbo = new PanResultDbo(gameId, daboluoPanResult);
 			panResultDbo.setPanActionFrame(panActionFrame);
-			memcachedPanResultDboDao.save(panResultDbo);
-			executorService.submit(() -> {
-				panResultDboDao.save(panResultDbo);
-				try {
-					List<PanActionFrameDbo> frameList = memcachedPanActionFrameDboDao.findByGameIdAndActionNo(gameId,
-							panNo, actionNo);
-					panActionFrameDboDao.save(frameList);
-					// memcachedPanActionFrameDboDao.removePanActionFrameDbo(gameId, panNo,
-					// actionNo);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
 			if (pukeActionResult.getJuResult() != null) {// 一切都结束了
 				// 要记录局结果
 				JuResultDbo juResultDbo = new JuResultDbo(gameId, panResultDbo, pukeActionResult.getJuResult());
-				memcachedJuResultDboDao.save(juResultDbo);
-				executorService.submit(() -> {
-					pukeGameDboDao.save(pukeGameDbo);
-					juResultDboDao.save(juResultDbo);
-				});
+				juResultDboDao.save(juResultDbo);
 			}
+			panResultDboDao.save(panResultDbo);
 		}
 	}
 
-	public void readyToNextPan(ReadyToNextPanResult readyToNextPanResult) throws Exception {
+	public void readyToNextPan(ReadyToNextPanResult readyToNextPanResult) {
 		PukeGameValueObject pukeGame = readyToNextPanResult.getPukeGame();
 		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
 		pukeGame.allPlayerIds().forEach((pid) -> playerInfoMap.put(pid, playerInfoDao.findById(pid)));
 		PukeGameDbo pukeGameDbo = new PukeGameDbo(pukeGame, playerInfoMap);
-		memcachedPukeGameDboDao.save(pukeGameDbo);
+		pukeGameDboDao.save(pukeGameDbo);
 
 		if (readyToNextPanResult.getFirstActionFrame() != null) {
 			PanActionFrame panActionFrame = readyToNextPanResult.getFirstActionFrame();
@@ -176,24 +132,20 @@ public class PukePlayQueryService {
 			int actionNo = panActionFrame.getNo();
 			PanActionFrameDbo panActionFrameDbo = new PanActionFrameDbo(gameId, panNo, actionNo);
 			panActionFrameDbo.setPanActionFrame(panActionFrame);
-			try {
-				memcachedPanActionFrameDboDao.save(panActionFrameDbo);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			panActionFrameDboDao.save(panActionFrameDbo);
 		}
 	}
 
-	public PanResultDbo findPanResultDbo(String gameId, int panNo) throws Exception {
-		return memcachedPanResultDboDao.findByGameIdAndPanNo(gameId, panNo);
-	}
-
-	public PanResultDbo findPanResultDboForBackPlay(String gameId, int panNo) throws Exception {
+	public PanResultDbo findPanResultDbo(String gameId, int panNo) {
 		return panResultDboDao.findByGameIdAndPanNo(gameId, panNo);
 	}
 
-	public JuResultDbo findJuResultDbo(String gameId) throws Exception {
-		return memcachedJuResultDboDao.findByGameId(gameId);
+	public PanResultDbo findPanResultDboForBackPlay(String gameId, int panNo) {
+		return panResultDboDao.findByGameIdAndPanNo(gameId, panNo);
+	}
+
+	public JuResultDbo findJuResultDbo(String gameId) {
+		return juResultDboDao.findByGameId(gameId);
 	}
 
 	public List<PanActionFrameDbo> findPanActionFrameDboForBackPlay(String gameId, int panNo) {

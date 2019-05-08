@@ -1,10 +1,15 @@
 package com.anbang.qipai.daboluo.cqrs.q.dbo;
 
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.dml.mpgame.game.extend.vote.GameFinishVoteValueObject;
 
+@Document
 public class GameFinishVoteDbo {
 
 	private String id;
+	@Indexed(unique = false)
 	private String gameId;
 	private GameFinishVoteValueObject vote;
 

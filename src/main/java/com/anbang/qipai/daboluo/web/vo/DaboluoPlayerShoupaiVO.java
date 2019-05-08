@@ -14,8 +14,13 @@ public class DaboluoPlayerShoupaiVO {
 
 	}
 
-	public DaboluoPlayerShoupaiVO(Map<Integer, PukePai> allShoupai, int totalShoupai) {
-		this.allShoupai = new ArrayList<>(allShoupai.values());
+	public DaboluoPlayerShoupaiVO(Map<Integer, PukePai> allShoupai, int totalShoupai, List<Integer> sortIds) {
+		this.allShoupai = new ArrayList<>();
+		if (sortIds != null) {
+			for (int id : sortIds) {
+				this.allShoupai.add(allShoupai.get(id));
+			}
+		}
 		this.totalShoupai = totalShoupai;
 	}
 

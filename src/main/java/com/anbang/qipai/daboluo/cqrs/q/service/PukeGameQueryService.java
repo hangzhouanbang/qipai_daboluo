@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,9 +14,6 @@ import com.anbang.qipai.daboluo.cqrs.q.dao.GameFinishVoteDboDao;
 import com.anbang.qipai.daboluo.cqrs.q.dao.JuResultDboDao;
 import com.anbang.qipai.daboluo.cqrs.q.dao.PukeGameDboDao;
 import com.anbang.qipai.daboluo.cqrs.q.dao.WatchRecordDao;
-import com.anbang.qipai.daboluo.cqrs.q.dao.memcached.MemcachedGameFinishVoteDboDao;
-import com.anbang.qipai.daboluo.cqrs.q.dao.memcached.MemcachedJuResultDboDao;
-import com.anbang.qipai.daboluo.cqrs.q.dao.memcached.MemcachedPukeGameDboDao;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.GameFinishVoteDbo;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.JuResultDbo;
 import com.anbang.qipai.daboluo.cqrs.q.dbo.PukeGameDbo;
@@ -44,168 +39,116 @@ public class PukeGameQueryService {
 	private JuResultDboDao juResultDboDao;
 
 	@Autowired
-	private MemcachedPukeGameDboDao memcachedPukeGameDboDao;
-
-	@Autowired
-	private MemcachedGameFinishVoteDboDao memcachedGameFinishVoteDboDao;
-
-	@Autowired
-	private MemcachedJuResultDboDao memcachedJuResultDboDao;
-
-	@Autowired
 	private WatchRecordDao watchRecordDao;
 
-	private ExecutorService executorService = Executors.newCachedThreadPool();
-
-	public PukeGameDbo findPukeGameDboById(String gameId) throws Exception {
-		return memcachedPukeGameDboDao.findById(gameId);
-	}
-
-	public PukeGameDbo findPukeGameDboByIdForBackPlay(String gameId) throws Exception {
+	public PukeGameDbo findPukeGameDboById(String gameId) {
 		return pukeGameDboDao.findById(gameId);
 	}
 
-	public void newPukeGame(PukeGameValueObject pukeGame) throws Exception {
-		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
-		pukeGame.allPlayerIds().forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
-		PukeGameDbo pukeGameDbo = new PukeGameDbo(pukeGame, playerInfoMap);
-		memcachedPukeGameDboDao.save(pukeGameDbo);
+	public PukeGameDbo findPukeGameDboByIdForBackPlay(String gameId) {
+		return pukeGameDboDao.findById(gameId);
 	}
 
-	public void joinGame(PukeGameValueObject pukeGame) throws Exception {
+	public void newPukeGame(PukeGameValueObject pukeGame) {
 		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
 		pukeGame.allPlayerIds().forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
 		PukeGameDbo pukeGameDbo = new PukeGameDbo(pukeGame, playerInfoMap);
-		memcachedPukeGameDboDao.save(pukeGameDbo);
+		pukeGameDboDao.save(pukeGameDbo);
 	}
 
-	public void leaveGame(PukeGameValueObject pukeGame) throws Exception {
+	public void joinGame(PukeGameValueObject pukeGame) {
 		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
 		pukeGame.allPlayerIds().forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
 		PukeGameDbo pukeGameDbo = new PukeGameDbo(pukeGame, playerInfoMap);
-		memcachedPukeGameDboDao.save(pukeGameDbo);
+		pukeGameDboDao.save(pukeGameDbo);
+	}
+
+	public void leaveGame(PukeGameValueObject pukeGame) {
+		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
+		pukeGame.allPlayerIds().forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
+		PukeGameDbo pukeGameDbo = new PukeGameDbo(pukeGame, playerInfoMap);
+		pukeGameDboDao.save(pukeGameDbo);
 
 		GameFinishVoteValueObject gameFinishVoteValueObject = pukeGame.getVote();
 		if (gameFinishVoteValueObject != null) {
 			GameFinishVoteDbo gameFinishVoteDbo = new GameFinishVoteDbo();
 			gameFinishVoteDbo.setVote(gameFinishVoteValueObject);
 			gameFinishVoteDbo.setGameId(pukeGame.getId());
-			memcachedGameFinishVoteDboDao.save(gameFinishVoteDbo);
+			gameFinishVoteDboDao.save(gameFinishVoteDbo);
 		}
 		if (pukeGame.getJuResult() != null) {
 			DaboluoJuResult daboluoJuResult = (DaboluoJuResult) pukeGame.getJuResult();
 			JuResultDbo juResultDbo = new JuResultDbo(pukeGame.getId(), null, daboluoJuResult);
-			executorService.submit(() -> {
-				pukeGameDboDao.save(pukeGameDbo);
-				juResultDboDao.save(juResultDbo);
-				try {
-					GameFinishVoteDbo gameFinishVoteDbo = memcachedGameFinishVoteDboDao.findByGameId(pukeGame.getId());
-					if (gameFinishVoteDbo != null) {
-						gameFinishVoteDboDao.save(gameFinishVoteDbo);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
+			juResultDboDao.save(juResultDbo);
 		}
 	}
 
-	public void backToGame(String playerId, PukeGameValueObject pukeGameValueObject) throws Exception {
-		memcachedPukeGameDboDao.updatePlayerOnlineState(pukeGameValueObject.getId(), playerId,
+	public void backToGame(String playerId, PukeGameValueObject pukeGameValueObject) {
+		pukeGameDboDao.updatePlayerOnlineState(pukeGameValueObject.getId(), playerId,
 				pukeGameValueObject.findPlayerOnlineState(playerId));
 		GameFinishVoteValueObject gameFinishVoteValueObject = pukeGameValueObject.getVote();
 		if (gameFinishVoteValueObject != null) {
-			memcachedGameFinishVoteDboDao.update(pukeGameValueObject.getId(), gameFinishVoteValueObject);
+			gameFinishVoteDboDao.update(pukeGameValueObject.getId(), gameFinishVoteValueObject);
 		}
 	}
 
-	public void finishGameImmediately(PukeGameValueObject pukeGameValueObject) throws Exception {
+	public void finishGameImmediately(PukeGameValueObject pukeGameValueObject) {
 		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
 		pukeGameValueObject.allPlayerIds()
 				.forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
 		PukeGameDbo pukeGameDbo = new PukeGameDbo(pukeGameValueObject, playerInfoMap);
-		memcachedPukeGameDboDao.save(pukeGameDbo);
+		pukeGameDboDao.save(pukeGameDbo);
 
 		if (pukeGameValueObject.getJuResult() != null) {
 			DaboluoJuResult doudizhuJuResult = (DaboluoJuResult) pukeGameValueObject.getJuResult();
 			JuResultDbo juResultDbo = new JuResultDbo(pukeGameValueObject.getId(), null, doudizhuJuResult);
-			memcachedJuResultDboDao.save(juResultDbo);
-			executorService.submit(() -> {
-				pukeGameDboDao.save(pukeGameDbo);
-				juResultDboDao.save(juResultDbo);
-			});
+			juResultDboDao.save(juResultDbo);
 		}
 	}
 
-	public void finish(PukeGameValueObject pukeGameValueObject) throws Exception {
+	public void finish(PukeGameValueObject pukeGameValueObject) {
 		GameFinishVoteValueObject gameFinishVoteValueObject = pukeGameValueObject.getVote();
 		if (gameFinishVoteValueObject != null) {
 			GameFinishVoteDbo gameFinishVoteDbo = new GameFinishVoteDbo();
 			gameFinishVoteDbo.setVote(gameFinishVoteValueObject);
 			gameFinishVoteDbo.setGameId(pukeGameValueObject.getId());
-			memcachedGameFinishVoteDboDao.save(gameFinishVoteDbo);
+			gameFinishVoteDboDao.save(gameFinishVoteDbo);
 		}
 
 		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
 		pukeGameValueObject.allPlayerIds()
 				.forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
 		PukeGameDbo pukeGameDbo = new PukeGameDbo(pukeGameValueObject, playerInfoMap);
-		memcachedPukeGameDboDao.save(pukeGameDbo);
+		pukeGameDboDao.save(pukeGameDbo);
 
 		if (pukeGameValueObject.getJuResult() != null) {
 			DaboluoJuResult doudizhuJuResult = (DaboluoJuResult) pukeGameValueObject.getJuResult();
 			JuResultDbo juResultDbo = new JuResultDbo(pukeGameValueObject.getId(), null, doudizhuJuResult);
-			memcachedJuResultDboDao.save(juResultDbo);
-			executorService.submit(() -> {
-				pukeGameDboDao.save(pukeGameDbo);
-				juResultDboDao.save(juResultDbo);
-				try {
-					GameFinishVoteDbo gameFinishVoteDbo = memcachedGameFinishVoteDboDao
-							.findByGameId(pukeGameValueObject.getId());
-					if (gameFinishVoteDbo != null) {
-						gameFinishVoteDboDao.save(gameFinishVoteDbo);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
+			juResultDboDao.save(juResultDbo);
 		}
 	}
 
-	public void voteToFinish(PukeGameValueObject pukeGameValueObject) throws Exception {
+	public void voteToFinish(PukeGameValueObject pukeGameValueObject) {
 		GameFinishVoteValueObject gameFinishVoteValueObject = pukeGameValueObject.getVote();
 		if (gameFinishVoteValueObject != null) {
-			memcachedGameFinishVoteDboDao.update(pukeGameValueObject.getId(), gameFinishVoteValueObject);
+			gameFinishVoteDboDao.update(pukeGameValueObject.getId(), gameFinishVoteValueObject);
 		}
 
 		Map<String, PlayerInfo> playerInfoMap = new HashMap<>();
 		pukeGameValueObject.allPlayerIds()
 				.forEach((playerId) -> playerInfoMap.put(playerId, playerInfoDao.findById(playerId)));
 		PukeGameDbo pukeGameDbo = new PukeGameDbo(pukeGameValueObject, playerInfoMap);
-		memcachedPukeGameDboDao.save(pukeGameDbo);
+		pukeGameDboDao.save(pukeGameDbo);
 
 		if (pukeGameValueObject.getJuResult() != null) {
 			DaboluoJuResult doudizhuJuResult = (DaboluoJuResult) pukeGameValueObject.getJuResult();
 			JuResultDbo juResultDbo = new JuResultDbo(pukeGameValueObject.getId(), null, doudizhuJuResult);
-			memcachedJuResultDboDao.save(juResultDbo);
-			executorService.submit(() -> {
-				pukeGameDboDao.save(pukeGameDbo);
-				juResultDboDao.save(juResultDbo);
-				try {
-					GameFinishVoteDbo gameFinishVoteDbo = memcachedGameFinishVoteDboDao
-							.findByGameId(pukeGameValueObject.getId());
-					if (gameFinishVoteDbo != null) {
-						gameFinishVoteDboDao.save(gameFinishVoteDbo);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
+			juResultDboDao.save(juResultDbo);
 		}
 	}
 
-	public GameFinishVoteDbo findGameFinishVoteDbo(String gameId) throws Exception {
-		return memcachedGameFinishVoteDboDao.findByGameId(gameId);
+	public GameFinishVoteDbo findGameFinishVoteDbo(String gameId) {
+		return gameFinishVoteDboDao.findByGameId(gameId);
 	}
 
 	public WatchRecord saveWatchRecord(String gameId, Watcher watcher) {

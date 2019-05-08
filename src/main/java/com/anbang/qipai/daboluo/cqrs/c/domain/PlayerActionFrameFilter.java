@@ -10,13 +10,23 @@ public class PlayerActionFrameFilter {
 
 	public PanActionFrame filter(GameLatestPanActionFrameDbo frame, String playerId) {
 		PanActionFrame panActionFrame = frame.getPanActionFrame();
-		panActionFrame.getAction().setSolution(null);
+		panActionFrame.setAction(null);
 		List<ShisanshuiPlayerValueObject> playerList = panActionFrame.getPanAfterAction().getPlayerList();
 		for (ShisanshuiPlayerValueObject player : playerList) {
 			if (!playerId.equals(player.getId())) {
 				player.setAllShoupai(null);
+				player.setShoupaiIdListForSortList(null);
 				player.setChupaiSolution(null);
-				player.setChupaiSolutionCandidates(null);
+				player.setWulongCandidates(null);
+				player.setDuiziCandidates(null);
+				player.setLiangduiCandidates(null);
+				player.setSantiaoCandidates(null);
+				player.setShunziCandidates(null);
+				player.setTonghuaCandidates(null);
+				player.setTiezhiCandidates(null);
+				player.setHuluCandidates(null);
+				player.setTonghuashunCandidates(null);
+				player.setWumeiCandidates(null);
 				player.setChupaiSolutionForTips(null);
 			}
 		}
