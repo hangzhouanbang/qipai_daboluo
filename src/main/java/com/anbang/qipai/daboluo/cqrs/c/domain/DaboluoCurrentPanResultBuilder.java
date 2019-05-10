@@ -50,12 +50,14 @@ public class DaboluoCurrentPanResultBuilder implements CurrentPanResultBuilder {
 		// 两两结算基础分
 		for (int i = 0; i < panPlayerResultList.size(); i++) {
 			DaboluoPanPlayerResult playerResult1 = panPlayerResultList.get(i);
+			String playerId1 = playerResult1.getPlayerId();
 			DaboluoJiesuanScore score1 = playerResult1.getJiesuanScore();
 			for (int j = i + 1; j < panPlayerResultList.size(); j++) {
 				DaboluoPanPlayerResult playerResult2 = panPlayerResultList.get(j);
 				String playerId2 = playerResult2.getPlayerId();
 				DaboluoJiesuanScore score2 = playerResult2.getJiesuanScore();
 				score1.calculatePlayerJiesuanScore(playerId2, score2.getChupaiSolution(), daoComparator);
+				score2.calculatePlayerJiesuanScore(playerId1, score1.getChupaiSolution(), daoComparator);
 			}
 		}
 		for (int i = 0; i < panPlayerResultList.size(); i++) {

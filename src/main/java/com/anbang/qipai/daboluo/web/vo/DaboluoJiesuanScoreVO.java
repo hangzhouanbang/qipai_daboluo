@@ -22,6 +22,7 @@ public class DaboluoJiesuanScoreVO {
 	private boolean wumei;// 是否有五枚
 	private int wmbs = 4;// 五枚倍数
 	private boolean yitiaolong;// 是否一条龙
+	private int score;// 基础结算分
 	private int value;// 总分
 
 	public DaboluoJiesuanScoreVO() {
@@ -44,7 +45,16 @@ public class DaboluoJiesuanScoreVO {
 		wumei = daboluoJiesuanScore.isWumei();
 		wmbs = daboluoJiesuanScore.getWmbs();
 		yitiaolong = daboluoJiesuanScore.isYitiaolong();
+		score = daboluoJiesuanScore.getScore();
 		value = daboluoJiesuanScore.getValue();
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
 	}
 
 	public DaboluoDaoScore getToudao() {

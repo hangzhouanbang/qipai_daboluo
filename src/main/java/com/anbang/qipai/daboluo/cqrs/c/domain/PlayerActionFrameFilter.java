@@ -16,8 +16,6 @@ public class PlayerActionFrameFilter {
 			if (!playerId.equals(player.getId())) {
 				player.setAllShoupai(null);
 				player.setShoupaiIdListForSortList(null);
-				player.setChupaiSolution(null);
-				player.setWulongCandidates(null);
 				player.setDuiziCandidates(null);
 				player.setLiangduiCandidates(null);
 				player.setSantiaoCandidates(null);

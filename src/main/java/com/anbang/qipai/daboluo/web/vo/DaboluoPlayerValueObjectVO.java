@@ -2,7 +2,7 @@ package com.anbang.qipai.daboluo.web.vo;
 
 import java.util.List;
 
-import com.dml.shisanshui.pai.paixing.Dao;
+import com.dml.shisanshui.pai.PukePai;
 import com.dml.shisanshui.pai.paixing.PaixingSolution;
 import com.dml.shisanshui.player.ShisanshuiPlayerValueObject;
 import com.dml.shisanshui.position.Position;
@@ -13,45 +13,41 @@ public class DaboluoPlayerValueObjectVO {
 	private DaboluoPlayerShoupaiVO allShoupai;
 	private List<List<Integer>> shoupaiIdListForSortList;
 	/**
-	 * 玩家乌龙出牌方案
-	 */
-	private List<Dao> wulongCandidates;
-	/**
 	 * 玩家对子出牌方案
 	 */
-	private List<Dao> duiziCandidates;
+	private List<List<PukePai>> duiziCandidates;
 	/**
 	 * 玩家两对出牌方案
 	 */
-	private List<Dao> liangduiCandidates;
+	private List<List<PukePai>> liangduiCandidates;
 	/**
 	 * 玩家三条出牌方案
 	 */
-	private List<Dao> santiaoCandidates;
+	private List<List<PukePai>> santiaoCandidates;
 	/**
 	 * 玩家顺子出牌方案
 	 */
-	private List<Dao> shunziCandidates;
+	private List<List<PukePai>> shunziCandidates;
 	/**
 	 * 玩家同花出牌方案
 	 */
-	private List<Dao> tonghuaCandidates;
+	private List<List<PukePai>> tonghuaCandidates;
 	/**
 	 * 玩家葫芦出牌方案
 	 */
-	private List<Dao> huluCandidates;
+	private List<List<PukePai>> huluCandidates;
 	/**
 	 * 玩家铁支出牌方案
 	 */
-	private List<Dao> tiezhiCandidates;
+	private List<List<PukePai>> tiezhiCandidates;
 	/**
 	 * 玩家同花顺出牌方案
 	 */
-	private List<Dao> tonghuashunCandidates;
+	private List<List<PukePai>> tonghuashunCandidates;
 	/**
 	 * 玩家五枚出牌方案
 	 */
-	private List<Dao> wumeiCandidates;
+	private List<List<PukePai>> wumeiCandidates;
 	/**
 	 * 玩家出牌提示
 	 */
@@ -77,7 +73,6 @@ public class DaboluoPlayerValueObjectVO {
 			allShoupai = new DaboluoPlayerShoupaiVO(shisanshuiPlayerValueObject.getAllShoupai(),
 					shisanshuiPlayerValueObject.getTotalShoupai(), shoupaiIdListForSortList.get(0));
 		}
-		wulongCandidates = shisanshuiPlayerValueObject.getWulongCandidates();
 		duiziCandidates = shisanshuiPlayerValueObject.getDuiziCandidates();
 		liangduiCandidates = shisanshuiPlayerValueObject.getLiangduiCandidates();
 		santiaoCandidates = shisanshuiPlayerValueObject.getSantiaoCandidates();
@@ -123,83 +118,75 @@ public class DaboluoPlayerValueObjectVO {
 		this.allShoupai = allShoupai;
 	}
 
-	public List<Dao> getWulongCandidates() {
-		return wulongCandidates;
-	}
-
-	public void setWulongCandidates(List<Dao> wulongCandidates) {
-		this.wulongCandidates = wulongCandidates;
-	}
-
-	public List<Dao> getDuiziCandidates() {
+	public List<List<PukePai>> getDuiziCandidates() {
 		return duiziCandidates;
 	}
 
-	public void setDuiziCandidates(List<Dao> duiziCandidates) {
+	public void setDuiziCandidates(List<List<PukePai>> duiziCandidates) {
 		this.duiziCandidates = duiziCandidates;
 	}
 
-	public List<Dao> getLiangduiCandidates() {
+	public List<List<PukePai>> getLiangduiCandidates() {
 		return liangduiCandidates;
 	}
 
-	public void setLiangduiCandidates(List<Dao> liangduiCandidates) {
+	public void setLiangduiCandidates(List<List<PukePai>> liangduiCandidates) {
 		this.liangduiCandidates = liangduiCandidates;
 	}
 
-	public List<Dao> getSantiaoCandidates() {
+	public List<List<PukePai>> getSantiaoCandidates() {
 		return santiaoCandidates;
 	}
 
-	public void setSantiaoCandidates(List<Dao> santiaoCandidates) {
+	public void setSantiaoCandidates(List<List<PukePai>> santiaoCandidates) {
 		this.santiaoCandidates = santiaoCandidates;
 	}
 
-	public List<Dao> getShunziCandidates() {
+	public List<List<PukePai>> getShunziCandidates() {
 		return shunziCandidates;
 	}
 
-	public void setShunziCandidates(List<Dao> shunziCandidates) {
+	public void setShunziCandidates(List<List<PukePai>> shunziCandidates) {
 		this.shunziCandidates = shunziCandidates;
 	}
 
-	public List<Dao> getTonghuaCandidates() {
+	public List<List<PukePai>> getTonghuaCandidates() {
 		return tonghuaCandidates;
 	}
 
-	public void setTonghuaCandidates(List<Dao> tonghuaCandidates) {
+	public void setTonghuaCandidates(List<List<PukePai>> tonghuaCandidates) {
 		this.tonghuaCandidates = tonghuaCandidates;
 	}
 
-	public List<Dao> getHuluCandidates() {
+	public List<List<PukePai>> getHuluCandidates() {
 		return huluCandidates;
 	}
 
-	public void setHuluCandidates(List<Dao> huluCandidates) {
+	public void setHuluCandidates(List<List<PukePai>> huluCandidates) {
 		this.huluCandidates = huluCandidates;
 	}
 
-	public List<Dao> getTiezhiCandidates() {
+	public List<List<PukePai>> getTiezhiCandidates() {
 		return tiezhiCandidates;
 	}
 
-	public void setTiezhiCandidates(List<Dao> tiezhiCandidates) {
+	public void setTiezhiCandidates(List<List<PukePai>> tiezhiCandidates) {
 		this.tiezhiCandidates = tiezhiCandidates;
 	}
 
-	public List<Dao> getTonghuashunCandidates() {
+	public List<List<PukePai>> getTonghuashunCandidates() {
 		return tonghuashunCandidates;
 	}
 
-	public void setTonghuashunCandidates(List<Dao> tonghuashunCandidates) {
+	public void setTonghuashunCandidates(List<List<PukePai>> tonghuashunCandidates) {
 		this.tonghuashunCandidates = tonghuashunCandidates;
 	}
 
-	public List<Dao> getWumeiCandidates() {
+	public List<List<PukePai>> getWumeiCandidates() {
 		return wumeiCandidates;
 	}
 
-	public void setWumeiCandidates(List<Dao> wumeiCandidates) {
+	public void setWumeiCandidates(List<List<PukePai>> wumeiCandidates) {
 		this.wumeiCandidates = wumeiCandidates;
 	}
 

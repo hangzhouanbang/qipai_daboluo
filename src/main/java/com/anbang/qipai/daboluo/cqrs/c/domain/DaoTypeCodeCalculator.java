@@ -44,7 +44,7 @@ public class DaoTypeCodeCalculator {
 			@Override
 			public int compare(PukePaiMian o1, PukePaiMian o2) {
 				// TODO Auto-generated method stub
-				return o1.compareTo(o2);
+				return o2.compareTo(o1);
 			}
 		});
 		for (PukePaiMian paimian : paiMianList) {
@@ -103,7 +103,7 @@ public class DaoTypeCodeCalculator {
 					@Override
 					public int compare(PukePaiMian o1, PukePaiMian o2) {
 						// TODO Auto-generated method stub
-						return o1.compareTo(o2);
+						return o2.compareTo(o1);
 					}
 				});
 				for (PukePaiMian paimian : pukePaiList) {
@@ -144,7 +144,7 @@ public class DaoTypeCodeCalculator {
 			paixing = Paixing.tonghuashun;
 		} else if (tongDianshu == 4) {
 			paixing = Paixing.tiezhi;
-		} else if (tongDianshu == 3 && duizi == 1) {
+		} else if (tongDianshu == 3 && duizi == 2) {
 			paixing = Paixing.hulu;
 		} else if (tonghua) {
 			paixing = Paixing.tonghua;
@@ -187,11 +187,13 @@ public class DaoTypeCodeCalculator {
 		for (int i = 0; i + firstIndex < dianshuArray.length; i++) {
 			if (dianshuArray[i + firstIndex] > 0) {
 				lianxuCount++;
+			} else {
+				break;
 			}
 		}
 		if (lianxuCount == 5) {
 			return true;
-		} else if (lianxuCount == 4 && dianshuArray[dianshuArray.length - 1] > 0) {
+		} else if (firstIndex == 0 && lianxuCount == 4 && dianshuArray[dianshuArray.length - 1] > 0) {
 			return true;
 		}
 		return false;
