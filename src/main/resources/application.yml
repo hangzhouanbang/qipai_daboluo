@@ -111,9 +111,6 @@ spring:
           contentType: application/json
           producer:
             partitionCount: 1
-memcache:
-  ip: 127.0.0.1
-  port: 11211
 
 server:
   port: 2008
