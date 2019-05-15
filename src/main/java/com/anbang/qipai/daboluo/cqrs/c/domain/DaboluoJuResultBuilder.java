@@ -30,6 +30,12 @@ public class DaboluoJuResultBuilder implements JuResultBuilder {
 						juPlayerResult.setPlayerId(panPlayerResult.getPlayerId());
 						juPlayerResultMap.put(panPlayerResult.getPlayerId(), juPlayerResult);
 					}
+					if (panPlayerResult.getJiesuanScore().hasTeshupaixing()) {
+						juPlayerResult.increaseTspx();
+					}
+					if (panPlayerResult.getJiesuanScore().isQuanleida()) {
+						juPlayerResult.increaseQld();
+					}
 					juPlayerResult.increaseTotalScore(panPlayerResult.getJiesuanScore().getValue());
 				}
 			}

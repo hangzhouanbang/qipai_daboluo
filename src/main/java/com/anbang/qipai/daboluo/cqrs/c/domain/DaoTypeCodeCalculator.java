@@ -133,31 +133,42 @@ public class DaoTypeCodeCalculator {
 		for (PukePaiMian paimian : pukePaiList) {
 			dianshuArray[paimian.dianShu().ordinal()]++;
 		}
+		int size = pukePaiList.size();
 		boolean tonghua = isTonghua(pukePaiList);
 		boolean shunzi = isShunzi(dianshuArray);
 		int tongDianshu = countMaxDianshu(dianshuArray);
 		int duizi = countDuizi(dianshuArray);
 		Paixing paixing = Paixing.wulong;
-		if (tongDianshu == 5) {
-			paixing = Paixing.wumei;
-		} else if (tonghua && shunzi) {
-			paixing = Paixing.tonghuashun;
-		} else if (tongDianshu == 4) {
-			paixing = Paixing.tiezhi;
-		} else if (tongDianshu == 3 && duizi == 2) {
-			paixing = Paixing.hulu;
-		} else if (tonghua) {
-			paixing = Paixing.tonghua;
-		} else if (shunzi) {
-			paixing = Paixing.shunzi;
-		} else if (tongDianshu == 3) {
-			paixing = Paixing.santiao;
-		} else if (duizi == 2) {
-			paixing = Paixing.liangdui;
-		} else if (duizi == 1) {
-			paixing = Paixing.duizi;
+		if (size == 5) {
+			if (tongDianshu == 5) {
+				paixing = Paixing.wumei;
+			} else if (tonghua && shunzi) {
+				paixing = Paixing.tonghuashun;
+			} else if (tongDianshu == 4) {
+				paixing = Paixing.tiezhi;
+			} else if (tongDianshu == 3 && duizi == 2) {
+				paixing = Paixing.hulu;
+			} else if (tonghua) {
+				paixing = Paixing.tonghua;
+			} else if (shunzi) {
+				paixing = Paixing.shunzi;
+			} else if (tongDianshu == 3) {
+				paixing = Paixing.santiao;
+			} else if (duizi == 2) {
+				paixing = Paixing.liangdui;
+			} else if (duizi == 1) {
+				paixing = Paixing.duizi;
+			} else {
+				paixing = Paixing.wulong;
+			}
 		} else {
-			paixing = Paixing.wulong;
+			if (tongDianshu == 3) {
+				paixing = Paixing.santiao;
+			} else if (duizi == 1) {
+				paixing = Paixing.duizi;
+			} else {
+				paixing = Paixing.wulong;
+			}
 		}
 		return paixing;
 	}

@@ -1,15 +1,18 @@
 package com.anbang.qipai.daboluo.web.vo;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import com.anbang.qipai.daboluo.cqrs.c.domain.result.DaboluoDaoScore;
 import com.anbang.qipai.daboluo.cqrs.c.domain.result.DaboluoJiesuanScore;
+import com.dml.shisanshui.pai.paixing.PaixingSolution;
 
 public class DaboluoJiesuanScoreVO {
-	private DaboluoDaoScore toudao;// 第一道情况
-	private DaboluoDaoScore zhongdao;// 第二道情况
-	private DaboluoDaoScore weidao;// 第三道情况
+	private DaboluoDaoScoreVO toudao;// 第一道情况
+	private DaboluoDaoScoreVO zhongdao;// 第二道情况
+	private DaboluoDaoScoreVO weidao;// 第三道情况
+	private List<PlayerJiesuanScoreVO> playerDaoList = new ArrayList<>();
 	private Set<String> daqiangPlayerSet;
 	private boolean daqiang;// 是否打枪
 	private int dqbs = 1;// 打枪倍数
@@ -30,9 +33,13 @@ public class DaboluoJiesuanScoreVO {
 	}
 
 	public DaboluoJiesuanScoreVO(DaboluoJiesuanScore daboluoJiesuanScore) {
-		toudao = daboluoJiesuanScore.getToudao();
-		zhongdao = daboluoJiesuanScore.getZhongdao();
-		weidao = daboluoJiesuanScore.getWeidao();
+		PaixingSolution chupaiSolution = daboluoJiesuanScore.getChupaiSolution();
+		toudao = new DaboluoDaoScoreVO(daboluoJiesuanScore.getToudao(), chupaiSolution.getToudao());
+		zhongdao = new DaboluoDaoScoreVO(daboluoJiesuanScore.getZhongdao(), chupaiSolution.getZhongdao());
+		weidao = new DaboluoDaoScoreVO(daboluoJiesuanScore.getWeidao(), chupaiSolution.getWeidao());
+		daboluoJiesuanScore.getPlayerDaoMap().values().forEach((playerDao) -> {
+			playerDaoList.add(new PlayerJiesuanScoreVO(playerDao));
+		});
 		daqiangPlayerSet = new HashSet<>(daboluoJiesuanScore.getDaqiangPlayerSet());
 		daqiang = daboluoJiesuanScore.isDaqiang();
 		dqbs = daboluoJiesuanScore.getDqbs();
@@ -49,6 +56,14 @@ public class DaboluoJiesuanScoreVO {
 		value = daboluoJiesuanScore.getValue();
 	}
 
+	public List<PlayerJiesuanScoreVO> getPlayerDaoList() {
+		return playerDaoList;
+	}
+
+	public void setPlayerDaoList(List<PlayerJiesuanScoreVO> playerDaoList) {
+		this.playerDaoList = playerDaoList;
+	}
+
 	public int getScore() {
 		return score;
 	}
@@ -57,27 +72,27 @@ public class DaboluoJiesuanScoreVO {
 		this.score = score;
 	}
 
-	public DaboluoDaoScore getToudao() {
+	public DaboluoDaoScoreVO getToudao() {
 		return toudao;
 	}
 
-	public void setToudao(DaboluoDaoScore toudao) {
+	public void setToudao(DaboluoDaoScoreVO toudao) {
 		this.toudao = toudao;
 	}
 
-	public DaboluoDaoScore getZhongdao() {
+	public DaboluoDaoScoreVO getZhongdao() {
 		return zhongdao;
 	}
 
-	public void setZhongdao(DaboluoDaoScore zhongdao) {
+	public void setZhongdao(DaboluoDaoScoreVO zhongdao) {
 		this.zhongdao = zhongdao;
 	}
 
-	public DaboluoDaoScore getWeidao() {
+	public DaboluoDaoScoreVO getWeidao() {
 		return weidao;
 	}
 
-	public void setWeidao(DaboluoDaoScore weidao) {
+	public void setWeidao(DaboluoDaoScoreVO weidao) {
 		this.weidao = weidao;
 	}
 

@@ -72,7 +72,7 @@ public class PukeGame extends FixedPlayersMultipanAndVotetofinishGame {
 	public PanActionFrame createJuAndStartFirstPan(long startTime) throws Exception {
 		ju = new Ju();
 		ju.setCurrentPanFinishiDeterminer(new AllPlayerChupaiPanFinishiDeterminer());
-		ju.setJuFinishiDeterminer(new FixedPanNumbersJuFinishiDeterminer());
+		ju.setJuFinishiDeterminer(new FixedPanNumbersJuFinishiDeterminer(panshu));
 
 		JoinGameZuoweiDeterminer joinGameZuoweiDeterminer = new JoinGameZuoweiDeterminer();
 		joinGameZuoweiDeterminer.setPlayerIdPositionMap(playerIdPositionMap);

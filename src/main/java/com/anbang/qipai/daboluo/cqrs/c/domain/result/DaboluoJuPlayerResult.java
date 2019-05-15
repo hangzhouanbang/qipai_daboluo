@@ -2,11 +2,16 @@ package com.anbang.qipai.daboluo.cqrs.c.domain.result;
 
 public class DaboluoJuPlayerResult {
 	private String playerId;
-	private int yingCount;
+	private int tspx;// 特殊牌型
+	private int qld;// 全垒打
 	private int totalScore;
 
-	public void increaseYingCount() {
-		yingCount++;
+	public void increaseTspx() {
+		tspx++;
+	}
+
+	public void increaseQld() {
+		qld++;
 	}
 
 	public void increaseTotalScore(int score) {
@@ -21,12 +26,20 @@ public class DaboluoJuPlayerResult {
 		this.playerId = playerId;
 	}
 
-	public int getYingCount() {
-		return yingCount;
+	public int getTspx() {
+		return tspx;
 	}
 
-	public void setYingCount(int yingCount) {
-		this.yingCount = yingCount;
+	public void setTspx(int tspx) {
+		this.tspx = tspx;
+	}
+
+	public int getQld() {
+		return qld;
+	}
+
+	public void setQld(int qld) {
+		this.qld = qld;
 	}
 
 	public int getTotalScore() {

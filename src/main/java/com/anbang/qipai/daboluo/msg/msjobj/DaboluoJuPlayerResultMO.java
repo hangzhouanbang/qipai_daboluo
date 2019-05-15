@@ -7,14 +7,16 @@ public class DaboluoJuPlayerResultMO {
 	private String playerId;
 	private String nickname;
 	private String headimgurl;
-	private int yingCount;
+	private int tspx;// 特殊牌型
+	private int qld;// 全垒打
 	private int totalScore;
 
 	public DaboluoJuPlayerResultMO(PukeGamePlayerDbo playerDbo) {
 		playerId = playerDbo.getPlayerId();
 		nickname = playerDbo.getNickname();
 		headimgurl = playerDbo.getHeadimgurl();
-		yingCount = 0;
+		tspx = 0;
+		qld = 0;
 		totalScore = 0;
 	}
 
@@ -22,7 +24,8 @@ public class DaboluoJuPlayerResultMO {
 		playerId = playerDbo.getPlayerId();
 		nickname = playerDbo.getNickname();
 		headimgurl = playerDbo.getHeadimgurl();
-		yingCount = juPlayerResult.getYingCount();
+		tspx = juPlayerResult.getTspx();
+		qld = juPlayerResult.getQld();
 		totalScore = juPlayerResult.getTotalScore();
 	}
 
@@ -50,12 +53,20 @@ public class DaboluoJuPlayerResultMO {
 		this.headimgurl = headimgurl;
 	}
 
-	public int getYingCount() {
-		return yingCount;
+	public int getTspx() {
+		return tspx;
 	}
 
-	public void setYingCount(int yingCount) {
-		this.yingCount = yingCount;
+	public void setTspx(int tspx) {
+		this.tspx = tspx;
+	}
+
+	public int getQld() {
+		return qld;
+	}
+
+	public void setQld(int qld) {
+		this.qld = qld;
 	}
 
 	public int getTotalScore() {

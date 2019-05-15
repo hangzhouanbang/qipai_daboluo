@@ -74,10 +74,28 @@ public class DaboluoCurrentPanResultBuilder implements CurrentPanResultBuilder {
 				DaboluoPanPlayerResult playerResult2 = panPlayerResultList.get(j);
 				String playerId2 = playerResult2.getPlayerId();
 				DaboluoJiesuanScore score2 = playerResult2.getJiesuanScore();
-				score1.jiesuan(-score2.getPlayerJiesuanScoreById(playerId1));
-				score2.jiesuan(-score1.getPlayerJiesuanScoreById(playerId2));
+				int detal1 = score1.getPlayerJiesuanScoreById(playerId2);
+				int detal2 = score2.getPlayerJiesuanScoreById(playerId1);
+				if (detal1 > detal2) {
+					score1.jiesuan(detal1);
+					score2.jiesuan(-detal1);
+					score2.setPlayerJiesuanScoreById(playerId1, -detal1);
+				} else {
+					score1.jiesuan(-detal2);
+					score2.jiesuan(detal2);
+					score1.setPlayerJiesuanScoreById(playerId2, -detal2);
+				}
 			}
 		}
+		panPlayerResultList.forEach((playerResult) -> {
+			int score = playerResult.getJiesuanScore().getValue();
+			// 计算累计总分
+			if (latestFinishedPanResult != null) {
+				playerResult.setTotalScore(playerTotalScoreMap.get(playerResult.getPlayerId()) + score);
+			} else {
+				playerResult.setTotalScore(score);
+			}
+		});
 		DaboluoPanResult panResult = new DaboluoPanResult();
 		panResult.setPan(new PanValueObject(currentPan));
 		panResult.setPanFinishTime(panFinishTime);

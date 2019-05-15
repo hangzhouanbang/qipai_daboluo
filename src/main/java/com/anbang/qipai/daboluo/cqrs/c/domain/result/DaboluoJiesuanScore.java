@@ -48,6 +48,10 @@ public class DaboluoJiesuanScore {
 		return playerDaoMap.get(playerId).getValue();
 	}
 
+	public void setPlayerJiesuanScoreById(String playerId, int value) {
+		playerDaoMap.get(playerId).setValue(value);
+	}
+
 	/**
 	 * 计算总分
 	 */
@@ -103,7 +107,6 @@ public class DaboluoJiesuanScore {
 				jiesuan = 96;
 			}
 			playerJiesuanScore.setValue(jiesuan);
-			value += playerJiesuanScore.getValue();
 		}
 	}
 
@@ -197,9 +200,9 @@ public class DaboluoJiesuanScore {
 
 	private int calculatePlayerZhongdao(PaixingSolution solution, DaoComparator daoComparator) {
 		if (daoComparator.compare(chupaiSolution.getZhongdao(), solution.getZhongdao()) > 0) {
-			return 1;
+			return 2;
 		} else if (daoComparator.compare(chupaiSolution.getZhongdao(), solution.getZhongdao()) < 0) {
-			return -1;
+			return -2;
 		} else {
 			return 0;
 		}
@@ -207,12 +210,19 @@ public class DaboluoJiesuanScore {
 
 	private int calculatePlayerWeidao(PaixingSolution solution, DaoComparator daoComparator) {
 		if (daoComparator.compare(chupaiSolution.getWeidao(), solution.getWeidao()) > 0) {
-			return 1;
+			return 3;
 		} else if (daoComparator.compare(chupaiSolution.getWeidao(), solution.getWeidao()) < 0) {
-			return -1;
+			return -3;
 		} else {
 			return 0;
 		}
+	}
+
+	/**
+	 * 是否有特殊牌型
+	 */
+	public boolean hasTeshupaixing() {
+		return tiezhi || tonghuashun || wumei || yitiaolong;
 	}
 
 	public PaixingSolution getChupaiSolution() {
